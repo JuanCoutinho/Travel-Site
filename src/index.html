@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <title>Voos Mais Baratos</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <style>
+        #flight-results {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 16px; 
+        }
+
+        @media (max-width: 768px) {
+            #flight-results {
+                grid-template-columns: repeat(2, 1fr); 
+            }
+        }
+
+        @media (max-width: 480px) {
+            #flight-results {
+                grid-template-columns: 1fr; 
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto p-4">
+        <h1 class="text-3xl font-bold text-center mb-4">Buscador de Voos Mais Baratos</h1>
+        
+        <div class="bg-white p-4 rounded-lg shadow-md">
+            <form id="flight-search-form" class="flex flex-col md:flex-row md:space-x-4 mb-4">
+                <input type="text" id="origin" placeholder="Origem (Código IATA)" class="p-2 border border-gray-300 rounded" required>
+                <input type="text" id="destination" placeholder="Destino (Código IATA)" class="p-2 border border-gray-300 rounded" required>
+                <input type="text" id="departure-date" class="p-2 border border-gray-300 rounded" placeholder="Data de Partida" required>
+                <input type="number" id="adults" placeholder="Número de Adultos" class="p-2 border border-gray-300 rounded" required min="1" value="1">
+                <button type="submit" class="bg-blue-500 text-white p-2 rounded">Buscar Voos</button>
+            </form>
+        </div>
+
+        <div id="flight-results" class="mt-4"></div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        flatpickr("#departure-date", {
+            dateFormat: "Y-m-d", 
+            minDate: "today" 
+        });
+    </script>
+</body>
+</html>
