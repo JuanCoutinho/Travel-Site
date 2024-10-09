@@ -16,8 +16,14 @@
         
         <div class="bg-white p-4 rounded-lg shadow-md">
             <form id="flight-search-form" class="flex flex-col md:flex-row md:space-x-4 mb-4">
-                <input type="text" id="origin" placeholder="Origem (Código IATA)" class="p-2 border border-gray-300 rounded" required>
-                <input type="text" id="destination" placeholder="Destino (Código IATA)" class="p-2 border border-gray-300 rounded" required>
+                <div class="relative">
+                    <input type="text" id="search1" placeholder="Pesquise aeroporto de embarque..." class="p-2 border border-gray-300 rounded w-full" required>
+                    <div id="suggestions1" class="suggestions absolute bg-white border border-gray-300 rounded mt-1 w-full"></div>
+                </div>
+                <div class="relative">
+                    <input type="text" id="search2" placeholder="Pesquise aeroporto de destino..." class="p-2 border border-gray-300 rounded w-full" required>
+                    <div id="suggestions2" class="suggestions absolute bg-white border border-gray-300 rounded mt-1 w-full"></div>
+                </div>
                 <input type="text" id="departure-date" class="p-2 border border-gray-300 rounded" placeholder="Data de Partida" required>
                 <input type="number" id="adults" placeholder="Número de Adultos" class="p-2 border border-gray-300 rounded" required min="1" value="1">
                 <button type="submit" class="bg-blue-500 text-white p-2 rounded">Buscar Voos</button>
@@ -25,14 +31,102 @@
         </div>
 
         <div id="flight-results" class="mt-4"></div>
-    </div>
+    </div>  
 
-    <script src="js/script.js"></script>
+    <script type="module" src="js/main.js"></script>
     <script>
         flatpickr("#departure-date", {
             dateFormat: "Y-m-d", 
             minDate: "today" 
         });
+
+        let aeroportos = [];
+        let codigoIATAEmbarque = '';
+        let codigoIATADestino = '';
+
+        // Carrega aeroportos da API
+        function carregarAeroportos() {
+            fetch('https://airports-api-production-c3da.up.railway.app/api/aeroportos')
+                .then(response => response.json())
+                .then(data => {
+                    aeroportos = data;
+                })
+                .catch(error => console.error('Erro ao carregar os aeroportos:', error));
+        }
+
+        window.onload = carregarAeroportos;
+
+        // Filtra sugestões de aeroportos
+        function mostrarSugestoes(inputElement, suggestionsElement, tipo) {
+            const inputValue = inputElement.value.toLowerCase();
+            suggestionsElement.innerHTML = '';
+
+            if (inputValue) {
+                const filtrados = aeroportos.filter(aeroporto => {
+                    const nameMatches = aeroporto.name && aeroporto.name.toLowerCase().includes(inputValue);
+                    const cityMatches = aeroporto.municipality && aeroporto.municipality.toLowerCase().includes(inputValue);
+                    const stateMatches = aeroporto.iso_region && aeroporto.iso_region.toLowerCase().includes(inputValue);
+                    const isNotHeliport = aeroporto.type && !aeroporto.type.toLowerCase().includes('heliport');
+                    const isNotHelipad = aeroporto.type && !aeroporto.type.toLowerCase().includes('helipad');
+                    const hasIATA = aeroporto.iata_code;
+
+                    return (nameMatches || cityMatches || stateMatches) && isNotHeliport && isNotHelipad && hasIATA;
+                }).slice(0, 5);
+
+                filtrados.forEach(aeroporto => {
+                    const div = document.createElement('div');
+                    div.classList.add('suggestion');
+                    div.textContent = `${aeroporto.name} (${aeroporto.iata_code})`;
+                    div.onclick = () => {
+                        inputElement.value = `${aeroporto.name} (${aeroporto.iata_code})`;
+                        suggestionsElement.innerHTML = '';
+
+                        if (tipo === 'embarque') {
+                            codigoIATAEmbarque = aeroporto.iata_code;
+                        } else if (tipo === 'destino') {
+                            codigoIATADestino = aeroporto.iata_code;
+                        }
+                    };
+                    suggestionsElement.appendChild(div);
+                });
+            }
+        }
+
+        document.getElementById('search1').addEventListener('input', function() {
+            mostrarSugestoes(this, document.getElementById('suggestions1'), 'embarque');
+        });
+
+        document.getElementById('search2').addEventListener('input', function() {
+            mostrarSugestoes(this, document.getElementById('suggestions2'), 'destino');
+        });
+
+        // Submissão do formulário de busca de voos
+        document.getElementById('flight-search-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            if (codigoIATAEmbarque && codigoIATADestino) {
+                const departureDate = document.getElementById('departure-date').value;
+                const adults = document.getElementById('adults').value;
+
+                // Aqui você pode integrar a chamada à API Amadeus para buscar voos
+                // Exemplo de exibição de resultados
+                const resultadosDiv = document.getElementById('flight-results');
+                resultadosDiv.innerHTML = `
+                    <p>Buscando voos de ${codigoIATAEmbarque} para ${codigoIATADestino} em ${departureDate} para ${adults} adulto(s)...</p>
+                `;
+
+                // Realize a chamada à API de voos e atualize a interface com os resultados
+                buscarVoos(codigoIATAEmbarque, codigoIATADestino, departureDate, adults);
+            } else {
+                alert('Por favor, selecione os aeroportos de embarque e destino.');
+            }
+        });
+
+        function buscarVoos(embarque, destino, data, adultos) {
+            // Exemplo de requisição à API Amadeus (substitua com sua lógica)
+            console.log(`Buscando voos de ${embarque} para ${destino} em ${data} para ${adultos} adulto(s).`);
+            // Use os dados para criar a requisição real e exibir os resultados.
+        }
     </script>
 </body>
 </html>
