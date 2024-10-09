@@ -9,10 +9,23 @@ document
 
     loginUser(email, password)
       .then(() => {
-        alert("Login bem-sucedido!");
-        window.location.href = "index.html";
+        showNotification("Login bem-sucedido!", "success");
+        setTimeout(() => {
+          window.location.href = "index.html";
+        }, 2000); // Espera 2 segundos antes de redirecionar
       })
       .catch((error) => {
-        alert("Erro: " + error.message);
+        showNotification("Erro: " + error.message, "error");
       });
   });
+
+function showNotification(message, type) {
+  const notification = document.getElementById("notification");
+  notification.textContent = message;
+  notification.className = `notification ${type}`;
+  notification.style.opacity = 1; // Fade-in
+
+  setTimeout(() => {
+    notification.style.opacity = 0; // Fade-out
+  }, 3000); // Espera 3 segundos antes de começar a fade-out
+}
