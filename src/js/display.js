@@ -1,7 +1,27 @@
 import { fetchExchangeRate } from './api/exchange.js';
-import { fetchAirlineImage, fetchDestinationImage } from './api/unsplash.js';
+import { fetchAirportImage } from './api/wikimedia.js';
+import { fetchAirlineImage } from './api/unsplash.js'; 
 
-async function displayFlights(flights, destinationImageUrl) {
+let airlineLogos = {};
+
+// Função para carregar o CSV
+async function loadAirlineLogos() {
+  const response = await fetch('./csv/companhias_aereas.csv');
+  const text = await response.text();
+  const rows = text.split('\n').slice(1); // Ignorar o cabeçalho
+
+  rows.forEach(row => {
+    const [id, nome, sigla, logo] = row.split(',');
+    if (sigla) {
+      airlineLogos[sigla.trim()] = logo.trim();
+    }
+  });
+}
+
+// Chame a função para carregar os logos
+loadAirlineLogos();
+
+async function displayFlights(flights, destinationImageUrl, departureInput, arrivalInput) {
   const resultsContainer = document.getElementById("flight-results");
   resultsContainer.innerHTML = "";
 
@@ -11,40 +31,72 @@ async function displayFlights(flights, destinationImageUrl) {
     return;
   }
 
-  for (const flight of flights) {
-    const price = flight.price.total;
-    const currency = flight.price.currency;
-    const priceInBRL = currency === "EUR" ? (price * exchangeRate).toFixed(2) : price;
+  // Ordenar os voos por preço e pegar as 9 mais baratas
+  const sortedFlights = flights.sort((a, b) => a.price.total - b.price.total);
+  const cheapFlights = sortedFlights.slice(0, 9);
+  const remainingFlights = sortedFlights.slice(9);
 
-    const departure = flight.itineraries[0].segments[0].departure;
-    const arrival = flight.itineraries[0].segments.slice(-1)[0].arrival;
-    const airlineName = flight.itineraries[0].segments[0].carrierCode;
+  // Função para renderizar os voos
+  async function renderFlights(flights) {
+    for (const flight of flights) {
+      const price = flight.price.total;
+      const currency = flight.price.currency;
+      const priceInBRL = currency === "EUR" ? (price * exchangeRate).toFixed(2) : price;
 
-    const airlineImageUrl = await fetchAirlineImage(airlineName);
-    const imageUrl = destinationImageUrl || "URL_FALLBACK_DA_IMAGEM";
+      const departure = flight.itineraries[0].segments[0].departure;
+      const arrival = flight.itineraries[0].segments.slice(-1)[0].arrival;
+      const airlineName = flight.itineraries[0].segments[0].carrierCode;
 
-    const flightCard = document.createElement("div");
-    flightCard.classList.add("bg-white", "shadow-lg", "rounded-lg", "p-4", "mb-4", "flex", "items-center");
+      const airlineImageUrl = airlineLogos[airlineName] || "https://cdn-icons-png.flaticon.com/512/6557/6557822.png";
 
-    const imageElement = `<img src="${imageUrl}" alt="Destino" class="w-24 h-24 rounded-lg mr-4">`;
-    const flightInfo = `
-      <div class="flex-grow">
-        <h2 class="text-xl font-bold mb-2">${arrival.iataCode} (${arrival.at.split("T")[0]})</h2>
-        <p class="text-gray-500 mb-1">Partida: ${departure.iataCode} (${departure.at.split("T")[0]})</p>
-        <p class="text-gray-500 mb-1">Chegada: ${arrival.iataCode} (${arrival.at.split("T")[0]})</p>
-        <p class="text-gray-700 font-bold mb-1">Preço: R$ ${priceInBRL}</p>
-      </div>
+      const imageUrl = destinationImageUrl || "https://cdn-icons-png.flaticon.com/512/7120/7120893.png";
+      const departureAirportImageUrl = await fetchAirportImage(departureInput);
+      const arrivalAirportImageUrl = await fetchAirportImage(arrivalInput);
+
+      const finalImageUrl = arrivalAirportImageUrl || imageUrl;
+
+      const flightCard = document.createElement("div");
+      flightCard.classList.add("bg-white", "shadow-lg", "rounded-lg", "p-4", "mb-4", "flex", "items-center");
+
+      const imageElement = `<img src="${finalImageUrl}" alt="Aeroporto" class="w-24 h-24 rounded-lg mr-4">`;
+      const flightInfo = `
+        <div class="flex-grow">
+          <h2 class="text-xl font-bold mb-2">${arrival.iataCode} (${arrival.at.split("T")[0]})</h2>
+          <p class="text-gray-500 mb-1">Partida: ${departure.iataCode} (${departure.at.split("T")[0]})</p>
+          <p class="text-gray-500 mb-1">Chegada: ${arrival.iataCode} (${arrival.at.split("T")[0]})</p>
+          <p class="text-gray-700 font-bold mb-1">Preço: R$ ${priceInBRL}</p>
+        </div>
+      `;
+      const airlineInfo = `
+        <div class="text-right ml-12">
+          <img src="${airlineImageUrl}" alt="Companhia" class="w-14 h-auto mb-2 mx-auto">
+          <p class="text-sm font-semibold">${airlineName}</p>
+          <p class="text-xs text-gray-500">Econômica</p>
+        </div>
+      `;
+
+      flightCard.innerHTML = `<div class="flex">${imageElement}${flightInfo}${airlineInfo}</div>`;
+      resultsContainer.appendChild(flightCard);
+    }
+  }
+
+  // Renderiza as 9 voos mais baratos
+  await renderFlights(cheapFlights);
+
+  // Mostrar mais voos
+  if (remainingFlights.length > 0) {
+    const moreFlightsMessage = document.createElement("div");
+    moreFlightsMessage.classList.add("text-center", "mt-4");
+    moreFlightsMessage.innerHTML = `
+      <p>🤔 Deseja mostrar mais? As próximas ofertas são um pouco mais caras que o normal...</p>
+      <button id="show-more" class="bg-blue-500 text-white p-2 rounded mt-2">Mostrar mais</button>
     `;
-    const airlineInfo = `
-      <div class="text-right">
-        <img src="${airlineImageUrl || "URL_DO_LOGO_DA_COMPANHIA"}" alt="Companhia" class="w-12 h-12 mb-2 mx-auto">
-        <p class="text-sm font-semibold">${airlineName}</p>
-        <p class="text-xs text-gray-500">Econômica</p>
-      </div>
-    `;
+    resultsContainer.appendChild(moreFlightsMessage);
 
-    flightCard.innerHTML = `<div class="flex">${imageElement}${flightInfo}${airlineInfo}</div>`;
-    resultsContainer.appendChild(flightCard);
+    document.getElementById("show-more").addEventListener("click", async () => {
+      moreFlightsMessage.remove(); // Remove a mensagem após mostrar mais voos
+      await renderFlights(remainingFlights);
+    });
   }
 
   if (resultsContainer.innerHTML === "") {

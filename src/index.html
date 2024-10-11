@@ -30,7 +30,13 @@
             </form>
         </div>
 
+        <div id="loading" class="hidden text-center mt-4">
+            <div class="loader"></div>
+            <p class="text-lg font-semibold">Estamos apurando nossas passagens...</p>
+        </div>
+
         <div id="flight-results" class="mt-4"></div>
+        
     </div>  
 
     <script type="module" src="js/main.js"></script>
@@ -44,7 +50,6 @@
         let codigoIATAEmbarque = '';
         let codigoIATADestino = '';
 
-        // Carrega aeroportos da API
         function carregarAeroportos() {
             fetch('https://airports-api-production-c3da.up.railway.app/api/aeroportos')
                 .then(response => response.json())
@@ -56,7 +61,6 @@
 
         window.onload = carregarAeroportos;
 
-        // Filtra sugestões de aeroportos
         function mostrarSugestoes(inputElement, suggestionsElement, tipo) {
             const inputValue = inputElement.value.toLowerCase();
             suggestionsElement.innerHTML = '';
@@ -100,7 +104,6 @@
             mostrarSugestoes(this, document.getElementById('suggestions2'), 'destino');
         });
 
-        // Submissão do formulário de busca de voos
         document.getElementById('flight-search-form').addEventListener('submit', function(event) {
             event.preventDefault();
 
@@ -108,14 +111,6 @@
                 const departureDate = document.getElementById('departure-date').value;
                 const adults = document.getElementById('adults').value;
 
-                // Aqui você pode integrar a chamada à API Amadeus para buscar voos
-                // Exemplo de exibição de resultados
-                const resultadosDiv = document.getElementById('flight-results');
-                resultadosDiv.innerHTML = `
-                    <p>Buscando voos de ${codigoIATAEmbarque} para ${codigoIATADestino} em ${departureDate} para ${adults} adulto(s)...</p>
-                `;
-
-                // Realize a chamada à API de voos e atualize a interface com os resultados
                 buscarVoos(codigoIATAEmbarque, codigoIATADestino, departureDate, adults);
             } else {
                 alert('Por favor, selecione os aeroportos de embarque e destino.');
@@ -123,9 +118,7 @@
         });
 
         function buscarVoos(embarque, destino, data, adultos) {
-            // Exemplo de requisição à API Amadeus (substitua com sua lógica)
             console.log(`Buscando voos de ${embarque} para ${destino} em ${data} para ${adultos} adulto(s).`);
-            // Use os dados para criar a requisição real e exibir os resultados.
         }
     </script>
 </body>

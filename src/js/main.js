@@ -1,12 +1,11 @@
 import { fetchFlights } from './api/amadeus.js';
-import { fetchDestinationImage } from './api/unsplash.js';
+import { fetchAirportImage } from './api/wikimedia.js'; // Importa a função para buscar imagens da Wikimedia
 import { displayFlights } from './display.js';
 
 $(document).ready(function () {
   $("#flight-search-form").on("submit", async function (event) {
     event.preventDefault();
 
-    // Extrai os códigos IATA dos inputs, considerando que o valor pode ser "Nome do aeroporto (IATA)"
     const originInput = $("#search1").val();
     const destinationInput = $("#search2").val();
 
@@ -20,17 +19,25 @@ $(document).ready(function () {
       return;
     }
 
+    const loadingDiv = document.getElementById("loading");
+    loadingDiv.classList.remove('hidden');
+    document.getElementById("flight-results").innerHTML = '';
+
     try {
       const flights = await fetchFlights(origin, destination, departureDate, adults);
-      const destinationImageUrl = await fetchDestinationImage(destination);
-      displayFlights(flights.data, destinationImageUrl);
+      // Busca imagens dos aeroportos no Wikimedia
+      const departureImageUrl = await fetchAirportImage(originInput);
+      const destinationImageUrl = await fetchAirportImage(destinationInput);
+
+      displayFlights(flights.data, destinationImageUrl, originInput, destinationInput);
     } catch (error) {
       console.error("Erro:", error);
       document.getElementById("flight-results").innerHTML = '<p class="text-red-500">Erro ao buscar os voos. Tente novamente.</p>';
+    } finally {
+      loadingDiv.classList.add('hidden');
     }
   });
 
-  // Função para extrair o código IATA do input no formato "Nome (IATA)"
   function extractIATA(inputValue) {
     const match = inputValue.match(/\((\w{3})\)$/);
     return match ? match[1] : '';
