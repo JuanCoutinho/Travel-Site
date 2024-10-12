@@ -1,5 +1,5 @@
 import { fetchFlights } from './api/amadeus.js';
-import { fetchAirportImage } from './api/wikimedia.js'; // Importa a função para buscar imagens da Wikimedia
+import { fetchAirportImage } from './api/wikimedia.js';
 import { displayFlights } from './display.js';
 
 $(document).ready(function () {
@@ -25,7 +25,6 @@ $(document).ready(function () {
 
     try {
       const flights = await fetchFlights(origin, destination, departureDate, adults);
-      // Busca imagens dos aeroportos no Wikimedia
       const departureImageUrl = await fetchAirportImage(originInput);
       const destinationImageUrl = await fetchAirportImage(destinationInput);
 

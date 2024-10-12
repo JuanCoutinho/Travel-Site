@@ -4,11 +4,10 @@ import { fetchAirlineImage } from './api/unsplash.js';
 
 let airlineLogos = {};
 
-// Função para carregar o CSV
 async function loadAirlineLogos() {
   const response = await fetch('./csv/companhias_aereas.csv');
   const text = await response.text();
-  const rows = text.split('\n').slice(1); // Ignorar o cabeçalho
+  const rows = text.split('\n').slice(1);
 
   rows.forEach(row => {
     const [id, nome, sigla, logo] = row.split(',');
@@ -18,7 +17,6 @@ async function loadAirlineLogos() {
   });
 }
 
-// Chame a função para carregar os logos
 loadAirlineLogos();
 
 async function displayFlights(flights, destinationImageUrl, departureInput, arrivalInput) {
@@ -31,12 +29,10 @@ async function displayFlights(flights, destinationImageUrl, departureInput, arri
     return;
   }
 
-  // Ordenar os voos por preço e pegar as 9 mais baratas
   const sortedFlights = flights.sort((a, b) => a.price.total - b.price.total);
   const cheapFlights = sortedFlights.slice(0, 9);
   const remainingFlights = sortedFlights.slice(9);
 
-  // Função para renderizar os voos
   async function renderFlights(flights) {
     for (const flight of flights) {
       const price = flight.price.total;
@@ -80,10 +76,8 @@ async function displayFlights(flights, destinationImageUrl, departureInput, arri
     }
   }
 
-  // Renderiza as 9 voos mais baratos
   await renderFlights(cheapFlights);
 
-  // Mostrar mais voos
   if (remainingFlights.length > 0) {
     const moreFlightsMessage = document.createElement("div");
     moreFlightsMessage.classList.add("text-center", "mt-4");
@@ -94,7 +88,7 @@ async function displayFlights(flights, destinationImageUrl, departureInput, arri
     resultsContainer.appendChild(moreFlightsMessage);
 
     document.getElementById("show-more").addEventListener("click", async () => {
-      moreFlightsMessage.remove(); // Remove a mensagem após mostrar mais voos
+      moreFlightsMessage.remove(); 
       await renderFlights(remainingFlights);
     });
   }

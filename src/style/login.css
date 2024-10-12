@@ -96,14 +96,14 @@ a:hover {
     color: white;
     font-weight: bold;
     z-index: 1000;
-    opacity: 0; /* Começa invisível */
-    transition: opacity 0.5s ease; /* Transição para opacidade */
+    opacity: 0; 
+    transition: opacity 0.5s ease; 
 }
 
 .notification.success {
-    background-color: #38a169; /* Verde para sucesso */
+    background-color: #38a169; 
 }
 
 .notification.error {
-    background-color: #e53e3e; /* Vermelho para erro */
+    background-color: #e53e3e; 
 }

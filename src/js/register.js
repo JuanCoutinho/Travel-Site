@@ -29,14 +29,12 @@ function showNotification(message, type) {
 
   document.body.prepend(notification);
 
-  // Fade-in
   requestAnimationFrame(() => {
     notification.style.opacity = '1';
   });
 
   
   setTimeout(() => {
-    // Fade-out
     notification.style.opacity = '0';
     setTimeout(() => {
       notification.remove();
