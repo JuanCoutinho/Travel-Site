@@ -37,7 +37,11 @@ async function displayFlights(flights, destinationImageUrl, departureInput, arri
     for (const flight of flights) {
       const price = flight.price.total;
       const currency = flight.price.currency;
-      const priceInBRL = currency === "EUR" ? (price * exchangeRate).toFixed(2) : price;
+
+      // Adicionando o console.log antes da conversão
+      console.log(`Preço antes da conversão: ${price} ${currency}`);
+
+      const priceInBRL = currency !== "BRL" ? (price * exchangeRate).toFixed(2) : price;
 
       const departure = flight.itineraries[0].segments[0].departure;
       const arrival = flight.itineraries[0].segments.slice(-1)[0].arrival;
