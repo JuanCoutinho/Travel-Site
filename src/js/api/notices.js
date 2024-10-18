@@ -9,14 +9,23 @@ $(document).ready(function() {
         }
     });
 
-$('.carousel').slick({
-    infinite: true,
-    slidesToShow: 3,
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 3000,
-    arrows: false 
-});
+    $('.carousel').slick({
+        infinite: true,
+        slidesToShow: 3,
+        slidesToScroll: 1,
+        autoplay: true,
+        autoplaySpeed: 3000,
+        arrows: false,
+        responsive: [
+            {
+                breakpoint: 768,
+                settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1
+                }
+            }
+        ]
+    });
 
     const apiKey = '2dcc59229e1448c395afc2222225fff8';
     const url = `https://newsapi.org/v2/everything?q=aviation&language=pt&apiKey=${apiKey}`;
@@ -48,7 +57,16 @@ $('.carousel').slick({
                 slidesToScroll: 1,
                 autoplay: true,
                 autoplaySpeed: 3000,
-                arrows: false
+                arrows: false,
+                responsive: [
+                    {
+                        breakpoint: 768,
+                        settings: {
+                            slidesToShow: 1,
+                            slidesToScroll: 1
+                        }
+                    }
+                ]
             });
         })
         .catch(error => console.error('Erro ao buscar notícias:', error));
