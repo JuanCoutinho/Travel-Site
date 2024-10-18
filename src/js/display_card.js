@@ -21,7 +21,9 @@ async function getAuthToken() {
 
     if (!response.ok) {
       const errorDetails = await response.text();
-      throw new Error(`Erro ao obter token: ${response.status} - ${errorDetails}`);
+      throw new Error(
+        `Erro ao obter token: ${response.status} - ${errorDetails}`
+      );
     }
 
     const data = await response.json();
@@ -51,13 +53,15 @@ async function fetchFlights(origin, destination, departureDate, adults) {
 
     if (!response.ok) {
       const errorDetails = await response.text();
-      throw new Error(`Erro ao buscar voos: ${response.status} - ${errorDetails}`);
+      throw new Error(
+        `Erro ao buscar voos: ${response.status} - ${errorDetails}`
+      );
     }
 
     return await response.json();
   } catch (error) {
     console.error("Erro na função fetchFlights:", error);
-    throw error; 
+    throw error;
   }
 }
 
@@ -69,14 +73,16 @@ async function fetchExchangeRate() {
 
     if (!response.ok) {
       const errorDetails = await response.text();
-      throw new Error(`Erro ao obter a cotação do euro: ${response.status} - ${errorDetails}`);
+      throw new Error(
+        `Erro ao obter a cotação do euro: ${response.status} - ${errorDetails}`
+      );
     }
 
     const data = await response.json();
     return data.conversion_rates.BRL;
   } catch (error) {
     console.error("Erro na função fetchExchangeRate:", error);
-    return null; 
+    return null;
   }
 }
 
@@ -88,14 +94,13 @@ async function loadAirports() {
       header: true,
       download: true,
       complete: (results) => {
-        results.data.forEach(airport => {
-
+        results.data.forEach((airport) => {
           if (airport.type === "large_airport") {
             airports.push({
               name: airport.name,
               iata: airport.iata_code,
               latitude: parseFloat(airport.latitude_deg),
-              longitude: parseFloat(airport.longitude_deg)
+              longitude: parseFloat(airport.longitude_deg),
             });
           }
         });
@@ -103,19 +108,22 @@ async function loadAirports() {
       },
       error: (error) => {
         reject(`Erro ao carregar CSV: ${error.message}`);
-      }
+      },
     });
   });
 }
 
 function calculateDistance(lat1, lon1, lat2, lon2) {
-  const R = 6371; 
-  const dLat = (lat2 - lat1) * Math.PI / 180;
-  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const R = 6371;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
 
-  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   const distance = R * c;
   return distance;
@@ -125,8 +133,13 @@ function findNearestAirport(latitude, longitude) {
   let nearest = null;
   let minDistance = Infinity;
 
-  airports.forEach(airport => {
-    const distance = calculateDistance(latitude, longitude, airport.latitude, airport.longitude);
+  airports.forEach((airport) => {
+    const distance = calculateDistance(
+      latitude,
+      longitude,
+      airport.latitude,
+      airport.longitude
+    );
     if (distance < minDistance) {
       minDistance = distance;
       nearest = airport;
@@ -154,28 +167,39 @@ async function getUserLocation() {
   });
 }
 
-const pexelsApiKey = "NVCNRdfNDW2JweFpgTy3kF6gEiLwabmaBhgFIgqMUJZMyQIeVFxWwP83"; 
+const pexelsApiKey = "NVCNRdfNDW2JweFpgTy3kF6gEiLwabmaBhgFIgqMUJZMyQIeVFxWwP83";
 
 async function fetchPexelsImage(query) {
   try {
-    const response = await fetch(`https://api.pexels.com/v1/search?query=${query}&per_page=1`, {
-      method: "GET",
-      headers: {
-        Authorization: pexelsApiKey,
-      },
-    });
+    const response = await fetch(
+      `https://api.pexels.com/v1/search?query=${query}&per_page=1`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: pexelsApiKey,
+        },
+      }
+    );
 
     if (!response.ok) {
       const errorDetails = await response.text();
-      throw new Error(`Erro ao buscar imagem: ${response.status} - ${errorDetails}`);
+      throw new Error(
+        `Erro ao buscar imagem: ${response.status} - ${errorDetails}`
+      );
     }
 
     const data = await response.json();
     return data.photos.length > 0 ? data.photos[0].src.original : null;
   } catch (error) {
     console.error("Erro na função fetchPexelsImage:", error);
-    return null; 
+    return null;
   }
+}
+
+// Função para formatar a data para o formato brasileiro
+function formatDateToBrazilian(date) {
+  const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+  return new Intl.DateTimeFormat('pt-BR', options).format(date);
 }
 
 async function displayFlights() {
@@ -191,7 +215,10 @@ async function displayFlights() {
     const userLocation = await getUserLocation();
     console.log("Localização do usuário:", userLocation);
 
-    const nearestAirport = findNearestAirport(userLocation.latitude, userLocation.longitude);
+    const nearestAirport = findNearestAirport(
+      userLocation.latitude,
+      userLocation.longitude
+    );
     console.log("Aeroporto mais próximo:", nearestAirport);
 
     if (!nearestAirport) {
@@ -199,10 +226,25 @@ async function displayFlights() {
       return;
     }
 
-    const origin = nearestAirport.iata; 
-    const destination = "RIO"; 
+    const origin = nearestAirport.iata;
+    const destination = "RIO";
 
-    const flightsData = await fetchFlights(origin, destination, "2024-11-10", 1);
+    const currentDate = new Date();
+
+    currentDate.setDate(currentDate.getDate() + 50);
+
+    const formattedDateForApi = currentDate.toISOString().split("T")[0]; 
+
+    const formattedDateForDisplay = formatDateToBrazilian(currentDate);
+    
+    console.log("Data da viagem:", formattedDateForApi);
+
+    const flightsData = await fetchFlights(
+      origin,
+      destination,
+      formattedDateForApi, 
+      1
+    );
     const flights = flightsData.data.slice(0, 12);
 
     const carousel = document.querySelector(".flight-carousel");
@@ -220,7 +262,7 @@ async function displayFlights() {
         <p>Preço: €${priceInEur} / R$${priceInBrl}</p>
         <p>Embarque: ${flight.itineraries[0].segments[0].departure.iataCode}</p>
         <p>Destino: ${flight.itineraries[0].segments[0].arrival.iataCode}</p>
-        <p>Classe: ${flight.travelerPricings[0].fareFamilies}</p>
+        <p>Data da viagem: ${formattedDateForDisplay}</p> <!-- Exibindo a data no formato brasileiro -->
       `;
 
       carousel.appendChild(card);
