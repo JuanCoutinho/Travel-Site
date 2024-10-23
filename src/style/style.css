@@ -274,7 +274,7 @@ header p {
 
 .search-button:hover {
   background-color: #4c51bf; /* Cor do botão ao passar o mouse */
-}
+} 
 
 @media (max-width: 1024px) {
   header .logo h1 {
@@ -409,3 +409,4 @@ header p {
     font-size: 14px; 
   }
 }
+

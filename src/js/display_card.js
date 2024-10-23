@@ -1,32 +1,11 @@
-const clientId = "k2wiffvdlH3Uhb05j7NGyw2GrO6rzY4E";
-const clientSecret = "4UtBaRC3A15aODsi";
+const clientId = "eVCpC7hT9Tdbjj7rwI0xChV8dn3C7Hkm";
+const clientSecret = "RxBqMY7TgUdGMoDq";
 const exchangeRateApiKey = "f0a82d5f3400636152941e1a";
 
 let regionToNameMap = {};
 let airlineLogos = {};
 const airports = [];
 const iataToStateMap = {};
-
-async function loadRegionData() {
-  return new Promise((resolve, reject) => {
-    Papa.parse("../src/csv/airport_code.csv", {
-      header: true,
-      download: true,
-      complete: (results) => {
-        results.data.forEach((row) => {
-          const { iso_region } = row;
-          if (iso_region) {
-            regionToNameMap[iso_region.trim()] = iso_region.trim();
-          }
-        });
-        resolve();
-      },
-      error: (error) => {
-        reject(`Erro ao carregar CSV: ${error.message}`);
-      },
-    });
-  });
-}
 
 async function loadAirlineLogos() {
   const response = await fetch("../src/csv/companhias_aereas.csv");
@@ -69,37 +48,6 @@ async function getAuthToken() {
     return data.access_token;
   } catch (error) {
     console.error("Erro na função getAuthToken:", error);
-    throw error;
-  }
-}
-
-async function fetchFlights(origin, destination, departureDate, adults) {
-  try {
-    const token = await getAuthToken();
-    const formattedDepartureDate = new Date(departureDate)
-      .toISOString()
-      .split("T")[0];
-
-    const response = await fetch(
-      `https://test.api.amadeus.com/v2/shopping/flight-offers?originLocationCode=${origin}&destinationLocationCode=${destination}&departureDate=${formattedDepartureDate}&adults=${adults}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    if (!response.ok) {
-      const errorDetails = await response.text();
-      throw new Error(
-        `Erro ao buscar voos: ${response.status} - ${errorDetails}`
-      );
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error("Erro na função fetchFlights:", error);
     throw error;
   }
 }
@@ -211,16 +159,46 @@ async function getUserLocation() {
   });
 }
 
-const pexelsApiKey = "NVCNRdfNDW2JweFpgTy3kF6gEiLwabmaBhgFIgqMUJZMyQIeVFxWwP83";
+function formatDateToBrazilian(date) {
+  const options = { day: "2-digit", month: "2-digit", year: "numeric" };
+  return new Intl.DateTimeFormat("pt-BR", options).format(date);
+}
 
-async function fetchPexelsImage(query) {
+
+async function loadRegionData() {
+  return new Promise((resolve, reject) => {
+    Papa.parse("../src/csv/airport_code.csv", {
+      header: true,
+      download: true,
+      complete: (results) => {
+        results.data.forEach((row) => {
+          const { iso_region } = row;
+          if (iso_region) {
+            regionToNameMap[iso_region.trim()] = iso_region.trim();
+          }
+        });
+        resolve();
+      },
+      error: (error) => {
+        reject(`Erro ao carregar CSV: ${error.message}`);
+      },
+    });
+  });
+}
+
+async function fetchFlights(origin, destination, departureDate, adults) {
   try {
+    const token = await getAuthToken();
+    const formattedDepartureDate = new Date(departureDate)
+      .toISOString()
+      .split("T")[0];
+
     const response = await fetch(
-      `https://api.pexels.com/v1/search?query=${query}&per_page=1`,
+      `https://test.api.amadeus.com/v2/shopping/flight-offers?originLocationCode=${origin}&destinationLocationCode=${destination}&departureDate=${formattedDepartureDate}&adults=${adults}`,
       {
         method: "GET",
         headers: {
-          Authorization: pexelsApiKey,
+          Authorization: `Bearer ${token}`,
         },
       }
     );
@@ -228,21 +206,15 @@ async function fetchPexelsImage(query) {
     if (!response.ok) {
       const errorDetails = await response.text();
       throw new Error(
-        `Erro ao buscar imagem: ${response.status} - ${errorDetails}`
+        `Erro ao buscar voos: ${response.status} - ${errorDetails}`
       );
     }
 
-    const data = await response.json();
-    return data.photos.length > 0 ? data.photos[0].src.original : null;
+    return await response.json();
   } catch (error) {
-    console.error("Erro na função fetchPexelsImage:", error);
-    return null;
+    console.error("Erro na função fetchFlights:", error);
+    throw error;
   }
-}
-
-function formatDateToBrazilian(date) {
-  const options = { day: "2-digit", month: "2-digit", year: "numeric" };
-  return new Intl.DateTimeFormat("pt-BR", options).format(date);
 }
 
 async function displayFlights() {
@@ -337,21 +309,25 @@ async function displayFlights() {
           const card = document.createElement("div");
           card.classList.add("card");
 
+          const searchQuery = encodeURIComponent(`${departureMunicipality} para ${arrivalMunicipality} ${formattedDateForDisplay}`);
+          const googleSearchUrl = `https://www.google.com/search?q=${searchQuery}`;
+
           card.innerHTML = `
-            <img src="./img/logotipo star2.png.png" alt="Starsearch" class="starsearch-logo">
-            <div class="flex flex-col">
-              <div class="card-header">
-                <img src="${airlineImageUrl}" alt="Companhia" class="airline-logo">
-              </div>
-              <div class="card-content">
-                <h3>${departureMunicipality} - ${arrivalMunicipality}</h3>
-                <p>Preço: €${priceInEur} / R$${priceInBrl}</p>
-                <p>Embarque: ${departureState} (${departureMunicipality})</p>
-                <p>Destino: ${arrivalState} (${arrivalMunicipality})</p>
-                <p>Data da viagem: ${formattedDateForDisplay}</p>
-              </div>
+          <img src="./img/logotipo star2.png.png" alt="Starsearch" class="starsearch-logo">
+          <div class="flex flex-col">
+            <div class="card-header">
+              <img src="${airlineImageUrl}" alt="Companhia" class="airline-logo">
             </div>
-          `;
+            <div class="card-content">
+              <h3>${departureMunicipality} - ${arrivalMunicipality}</h3>
+              <p>Preço: €${priceInEur} / R$${priceInBrl}</p>
+              <p>Embarque: ${departureState} (${departureMunicipality})</p>
+              <p>Destino: ${arrivalState} (${arrivalMunicipality})</p>
+              <p>Data da viagem: ${formattedDateForDisplay}</p>
+              <a href="${googleSearchUrl}" target="_blank" class="flight-link">Ver opções de voo</a>
+            </div>
+          </div>
+        `;        
 
           flightList.appendChild(card);
           totalFlightsDisplayed++; 
