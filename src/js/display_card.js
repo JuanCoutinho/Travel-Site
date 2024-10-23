@@ -137,10 +137,14 @@ async function loadAirports() {
               name: airport.name,
               iata: airport.iata_code,
               state: airport.iso_region,
+              municipality: airport.municipality,  
               latitude: parseFloat(airport.latitude_deg),
               longitude: parseFloat(airport.longitude_deg),
             });
-            iataToStateMap[airport.iata_code] = airport.iso_region;
+            iataToStateMap[airport.iata_code] = {
+              state: airport.iso_region,
+              municipality: airport.municipality,  
+            };
           }
         });
         resolve();
@@ -151,6 +155,7 @@ async function loadAirports() {
     });
   });
 }
+
 
 function calculateDistance(lat1, lon1, lat2, lon2) {
   const R = 6371; 
@@ -321,8 +326,13 @@ async function displayFlights() {
           const arrivalRegion = iataToStateMap[arrivalIata];
 
           const departureState =
-            regionToNameMap[departureRegion] || departureIata;
-          const arrivalState = regionToNameMap[arrivalRegion] || arrivalIata;
+            regionToNameMap[departureRegion.state] || departureIata;
+          const arrivalState = regionToNameMap[arrivalRegion.state] || arrivalIata;
+
+          const departureMunicipality =
+            departureRegion.municipality || "Município desconhecido";
+          const arrivalMunicipality =
+            arrivalRegion.municipality || "Município desconhecido";
 
           const card = document.createElement("div");
           card.classList.add("card");
@@ -334,10 +344,10 @@ async function displayFlights() {
                 <img src="${airlineImageUrl}" alt="Companhia" class="airline-logo">
               </div>
               <div class="card-content">
-                <h3>${departureState} - ${arrivalState}</h3>
+                <h3>${departureMunicipality} - ${arrivalMunicipality}</h3>
                 <p>Preço: €${priceInEur} / R$${priceInBrl}</p>
-                <p>Embarque: ${departureState}</p>
-                <p>Destino: ${arrivalState}</p>
+                <p>Embarque: ${departureState} (${departureMunicipality})</p>
+                <p>Destino: ${arrivalState} (${arrivalMunicipality})</p>
                 <p>Data da viagem: ${formattedDateForDisplay}</p>
               </div>
             </div>
@@ -347,7 +357,7 @@ async function displayFlights() {
           totalFlightsDisplayed++; 
         });
 
-        if (totalFlightsDisplayed >= 200) {
+        if (totalFlightsDisplayed >= 100) {
           console.log("Limite de 100 voos atingido.");
           return; 
         }
