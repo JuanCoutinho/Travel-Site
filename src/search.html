@@ -12,6 +12,8 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
     />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <title>Star Search</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -105,6 +107,29 @@
         width: 890px;
         height: auto;
       }
+
+      .price-chart-section {
+    border: 2px solid rgba(255, 221, 51, 1); /* Borda amarela */
+    border-radius: 12px; /* Bordas arredondadas */
+    background-color: #ffffff; /* Fundo branco para contraste */
+    padding: 1rem; /* Espaçamento interno */
+    margin: 2rem 0; /* Margem superior e inferior */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Sombra leve */
+}
+
+.price-chart-section h2 {
+    font-size: 1.5rem; /* Tamanho do texto do título */
+    font-weight: bold; /* Negrito */
+    color: #d69e2e; /* Cor do texto do título */
+    margin-bottom: 1rem; /* Margem inferior */
+    text-align: center; /* Centralizar texto */
+}
+
+.price-chart-section canvas {
+    max-width: 100%; /* Tornar o canvas responsivo */
+    height: auto; /* Manter proporção */
+}
+
     </style>
   </head>
   <body class="bg-white">
@@ -229,6 +254,13 @@
           </p>
         </div>
       </div>
+
+      <div class="price-chart-section bg-gray-50 p-4 rounded-lg shadow-md">
+        <h2 class="text-2xl font-semibold text-yellow-600 mb-4 text-center">Gráficos de Preços durante 7 dias</h2>
+        <canvas id="priceChart" width="400" height="200"></canvas>
+    </div>
+    
+
       <div
         id="flight-results"
         class="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
