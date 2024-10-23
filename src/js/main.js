@@ -24,11 +24,34 @@ $(document).ready(function () {
     document.getElementById("flight-results").innerHTML = '';
 
     try {
-      const flights = await fetchFlights(origin, destination, departureDate, adults);
+      const allFlights = [];
       const departureImageUrl = await fetchAirportImage(originInput);
       const destinationImageUrl = await fetchAirportImage(destinationInput);
 
-      displayFlights(flights.data, destinationImageUrl, originInput, destinationInput);
+      // Função para adicionar dias à data original
+      function addDaysToDate(date, days) {
+        const result = new Date(date);
+        result.setDate(result.getDate() + days);
+        return result.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+      }
+
+      // Loop para buscar voos na data selecionada e nos próximos 7 dias
+      for (let i = 0; i <= 7; i++) {
+        const currentDepartureDate = addDaysToDate(departureDate, i);
+        const flights = await fetchFlights(origin, destination, currentDepartureDate, adults);
+        
+        // Combinar os resultados de cada dia
+        if (flights && flights.data && flights.data.length > 0) {
+          allFlights.push(...flights.data);
+        }
+      }
+
+      if (allFlights.length > 0) {
+        displayFlights(allFlights, destinationImageUrl, originInput, destinationInput);
+      } else {
+        document.getElementById("flight-results").innerHTML = '<p class="text-red-500">Nenhum voo encontrado nos próximos 7 dias.</p>';
+      }
+
     } catch (error) {
       console.error("Erro:", error);
       document.getElementById("flight-results").innerHTML = '<p class="text-red-500">Erro ao buscar os voos. Tente novamente.</p>';
