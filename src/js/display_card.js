@@ -2,6 +2,45 @@ const clientId = "k2wiffvdlH3Uhb05j7NGyw2GrO6rzY4E";
 const clientSecret = "4UtBaRC3A15aODsi";
 const exchangeRateApiKey = "f0a82d5f3400636152941e1a";
 
+let regionToNameMap = {};
+let airlineLogos = {};
+const airports = [];
+const iataToStateMap = {};
+
+async function loadRegionData() {
+  return new Promise((resolve, reject) => {
+    Papa.parse("../src/csv/airport_code.csv", {
+      header: true,
+      download: true,
+      complete: (results) => {
+        results.data.forEach((row) => {
+          const { iso_region } = row;
+          if (iso_region) {
+            regionToNameMap[iso_region.trim()] = iso_region.trim();
+          }
+        });
+        resolve();
+      },
+      error: (error) => {
+        reject(`Erro ao carregar CSV: ${error.message}`);
+      },
+    });
+  });
+}
+
+async function loadAirlineLogos() {
+  const response = await fetch("../src/csv/companhias_aereas.csv");
+  const text = await response.text();
+  const rows = text.split("\n").slice(1);
+
+  rows.forEach((row) => {
+    const [id, nome, sigla, logo] = row.split(",");
+    if (sigla) {
+      airlineLogos[sigla.trim()] = logo.trim();
+    }
+  });
+}
+
 async function getAuthToken() {
   try {
     const response = await fetch(
@@ -86,8 +125,6 @@ async function fetchExchangeRate() {
   }
 }
 
-const airports = [];
-
 async function loadAirports() {
   return new Promise((resolve, reject) => {
     Papa.parse("../src/csv/airports.csv", {
@@ -95,13 +132,15 @@ async function loadAirports() {
       download: true,
       complete: (results) => {
         results.data.forEach((airport) => {
-          if (airport.type === "large_airport") {
+          if (airport.type === "large_airport" && airport.iata_code) {
             airports.push({
               name: airport.name,
               iata: airport.iata_code,
+              state: airport.iso_region,
               latitude: parseFloat(airport.latitude_deg),
               longitude: parseFloat(airport.longitude_deg),
             });
+            iataToStateMap[airport.iata_code] = airport.iso_region;
           }
         });
         resolve();
@@ -114,7 +153,7 @@ async function loadAirports() {
 }
 
 function calculateDistance(lat1, lon1, lat2, lon2) {
-  const R = 6371;
+  const R = 6371; 
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
   const dLon = ((lon2 - lon1) * Math.PI) / 180;
 
@@ -196,14 +235,15 @@ async function fetchPexelsImage(query) {
   }
 }
 
-// Função para formatar a data para o formato brasileiro
 function formatDateToBrazilian(date) {
-  const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
-  return new Intl.DateTimeFormat('pt-BR', options).format(date);
+  const options = { day: "2-digit", month: "2-digit", year: "numeric" };
+  return new Intl.DateTimeFormat("pt-BR", options).format(date);
 }
 
 async function displayFlights() {
   try {
+    await loadAirlineLogos();
+    await loadRegionData();
     await loadAirports();
 
     const exchangeRate = await fetchExchangeRate();
@@ -213,13 +253,10 @@ async function displayFlights() {
     }
 
     const userLocation = await getUserLocation();
-    console.log("Localização do usuário:", userLocation);
-
     const nearestAirport = findNearestAirport(
       userLocation.latitude,
       userLocation.longitude
     );
-    console.log("Aeroporto mais próximo:", nearestAirport);
 
     if (!nearestAirport) {
       console.error("Nenhum aeroporto encontrado nas proximidades.");
@@ -227,64 +264,95 @@ async function displayFlights() {
     }
 
     const origin = nearestAirport.iata;
-    const destination = "RIO";
+
+    const destinations = [
+      "JFK", "LAX", "LHR", "CDG", "NRT", "DXB", "SIN", "HKG", "SYD", "YYZ",
+      "FRA", "AMS", "PEK", "MIA", "GRU", "MEX", "ICN", "BKK", "IST", "SVO"
+    ];
 
     const currentDate = new Date();
-
-    currentDate.setDate(currentDate.getDate() + 50);
-
-    const formattedDateForApi = currentDate.toISOString().split("T")[0]; 
-
-    const formattedDateForDisplay = formatDateToBrazilian(currentDate);
     
-    console.log("Data da viagem:", formattedDateForApi);
+    const startDate = new Date();
+    startDate.setDate(currentDate.getDate() + 14);
 
-    const flightsData = await fetchFlights(
-      origin,
-      destination,
-      formattedDateForApi, 
-      1
-    );
-    const flights = flightsData.data.slice(0, 12);
+    const dates = [];
+    for (let i = 0; i < 20; i++) {
+      const date = new Date(startDate);
+      date.setDate(startDate.getDate() + i); 
+      dates.push(date);
+    }
 
-    const carousel = document.querySelector(".flight-carousel");
-    carousel.innerHTML = "";
+    const flightList = document.querySelector(".card-section");
+    flightList.innerHTML = "";
 
-    flights.forEach((flight) => {
-      const priceInEur = flight.price.total;
-      const priceInBrl = (priceInEur * exchangeRate).toFixed(2);
+    let totalFlightsDisplayed = 0; 
 
-      const card = document.createElement("div");
-      card.classList.add("card");
+    for (const destination of destinations) {
+      for (const date of dates) {
+        if (totalFlightsDisplayed >= 100) {
+          console.log("Limite de 100 voos atingido.");
+          return; 
+        }
 
-      card.innerHTML = `
-        <h3>${flight.itineraries[0].segments[0].departure.iataCode} - ${flight.itineraries[0].segments[0].arrival.iataCode}</h3>
-        <p>Preço: €${priceInEur} / R$${priceInBrl}</p>
-        <p>Embarque: ${flight.itineraries[0].segments[0].departure.iataCode}</p>
-        <p>Destino: ${flight.itineraries[0].segments[0].arrival.iataCode}</p>
-        <p>Data da viagem: ${formattedDateForDisplay}</p> <!-- Exibindo a data no formato brasileiro -->
-      `;
+        const formattedDateForApi = date.toISOString().split("T")[0];
+        const formattedDateForDisplay = formatDateToBrazilian(date);
 
-      carousel.appendChild(card);
-    });
+        const flightsData = await fetchFlights(
+          origin,
+          destination,
+          formattedDateForApi,
+          1
+        );
 
-    $(".flight-carousel").slick({
-      slidesToShow: 3,
-      slidesToScroll: 1,
-      infinite: true,
-      dots: false,
-      arrows: false,
-      autoplay: true,
-      autoplaySpeed: 2000,
-      responsive: [
-        {
-          breakpoint: 768,
-          settings: {
-            slidesToShow: 1,
-          },
-        },
-      ],
-    });
+        const flights = flightsData.data.slice(0, 60); 
+        flights.forEach((flight) => {
+          if (totalFlightsDisplayed >= 100) return; 
+          const priceInEur = flight.price.total;
+          const priceInBrl = (priceInEur * exchangeRate).toFixed(2);
+          const airlineCode = flight.itineraries[0].segments[0].carrierCode;
+          const airlineImageUrl =
+            airlineLogos[airlineCode] ||
+            "https://cdn-icons-png.flaticon.com/512/6557/6557822.png";
+
+          const departureIata =
+            flight.itineraries[0].segments[0].departure.iataCode;
+          const arrivalIata = flight.itineraries[0].segments[0].arrival.iataCode;
+          const departureRegion = iataToStateMap[departureIata];
+          const arrivalRegion = iataToStateMap[arrivalIata];
+
+          const departureState =
+            regionToNameMap[departureRegion] || departureIata;
+          const arrivalState = regionToNameMap[arrivalRegion] || arrivalIata;
+
+          const card = document.createElement("div");
+          card.classList.add("card");
+
+          card.innerHTML = `
+            <img src="./img/logotipo star2.png.png" alt="Starsearch" class="starsearch-logo">
+            <div class="flex flex-col">
+              <div class="card-header">
+                <img src="${airlineImageUrl}" alt="Companhia" class="airline-logo">
+              </div>
+              <div class="card-content">
+                <h3>${departureState} - ${arrivalState}</h3>
+                <p>Preço: €${priceInEur} / R$${priceInBrl}</p>
+                <p>Embarque: ${departureState}</p>
+                <p>Destino: ${arrivalState}</p>
+                <p>Data da viagem: ${formattedDateForDisplay}</p>
+              </div>
+            </div>
+          `;
+
+          flightList.appendChild(card);
+          totalFlightsDisplayed++; 
+        });
+
+        if (totalFlightsDisplayed >= 200) {
+          console.log("Limite de 100 voos atingido.");
+          return; 
+        }
+      }
+    }
   } catch (error) {
     console.error("Erro ao buscar voos:", error);
   }

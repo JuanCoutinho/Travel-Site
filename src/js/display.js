@@ -38,7 +38,6 @@ async function displayFlights(flights, destinationImageUrl, departureInput, arri
       const price = flight.price.total;
       const currency = flight.price.currency;
 
-      // Adicionando o console.log antes da conversão
       console.log(`Preço antes da conversão: ${price} ${currency}`);
 
       const priceInBRL = currency !== "BRL" ? (price * exchangeRate).toFixed(2) : price;
@@ -55,6 +54,10 @@ async function displayFlights(flights, destinationImageUrl, departureInput, arri
 
       const finalImageUrl = arrivalAirportImageUrl || imageUrl;
 
+      // Criando a URL para Google Flights com destino e origem
+const departureDate = departure.at.split('T')[0].replace(/-/g, ''); // Formatando a data para AAAAMMDD
+const googleFlightsUrl = `https://www.google.com/flights?hl=pt#flt=${departure.iataCode}.${arrival.iataCode}.${departureDate};c:BRL;e:1;sd:1;t:f`;
+
       const flightCard = document.createElement("div");
       flightCard.classList.add("bg-white", "shadow-lg", "rounded-lg", "p-4", "mb-4", "flex", "items-center");
 
@@ -65,6 +68,7 @@ async function displayFlights(flights, destinationImageUrl, departureInput, arri
           <p class="text-gray-500 mb-1">Partida: ${departure.iataCode} (${departure.at.split("T")[0]})</p>
           <p class="text-gray-500 mb-1">Chegada: ${arrival.iataCode} (${arrival.at.split("T")[0]})</p>
           <p class="text-gray-700 font-bold mb-1">Preço: R$ ${priceInBRL}</p>
+          <a href="${googleFlightsUrl}" target="_blank" class="text-blue-500 underline">Ver no Google Flights</a>
         </div>
       `;
       const airlineInfo = `
@@ -101,5 +105,25 @@ async function displayFlights(flights, destinationImageUrl, departureInput, arri
     resultsContainer.innerHTML = '<p class="text-gray-500">Nenhum voo encontrado.</p>';
   }
 }
+
+// Estrutura para armazenar os nomes das cidades
+const airportCities = {};
+
+// Função para carregar os dados de aeroportos e preencher o mapeamento
+async function loadAirportCities() {
+  const response = await fetch('./csv/airports.csv');
+  const text = await response.text();
+  const rows = text.split('\n').slice(1);
+
+  rows.forEach(row => {
+    const [id, ident, type, name, latitude_deg, longitude_deg, elevation_ft, continent, iso_country, iso_region, municipality, scheduled_service, gps_code, iata_code] = row.split(',');
+    if (iata_code && municipality) {
+      airportCities[iata_code.trim()] = municipality.trim();
+    }
+  });
+}
+
+// Chame a função ao iniciar
+await loadAirportCities();
 
 export { displayFlights };

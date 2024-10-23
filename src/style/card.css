@@ -1,23 +1,86 @@
 .card-section {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); 
+  gap: 20px;
   padding: 20px;
-  background-color: #f9f9f9;
+  width: calc(100% - 40px);
+  margin: 0 auto;
 }
 
-.flight-carousel {
-  display: flex;
-  flex-wrap: nowrap;
-  overflow: hidden;
+.flight-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); 
+  gap: 20px;
+  padding: 20px;
+}
+
+.starsearch-logo {
+  width: 50px; 
+  height: auto; 
+  margin-right: 500px;
 }
 
 .card {
+  position: relative; 
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
   background-color: white;
+  padding: 20px;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  margin: 10px;
-  padding: 15px;
-  width: 300px;
-  text-align: center;
   transition: transform 0.3s;
+  margin: 0;
+  width: 100%;
+}
+
+.card-header {
+  position: absolute;
+  top: 10px; 
+  right: 10px; 
+}
+
+.airline-logo {
+  width: 50px;
+  height: auto; 
+  object-fit: contain;
+}
+
+.card-content {
+  margin-top: 60px; 
+}
+
+.card h3 {
+  font-size: 1.2em;
+  margin: 10px 0;
+}
+
+.card p {
+  font-size: 0.9em;
+  color: #555;
+  margin: 5px 0;
+}
+
+.card:hover {
+  transform: scale(1.05);
+} 
+
+.card img {
+  align-self: flex-end;
+  margin-left: 10px; 
+}
+
+.flex {
+  display: flex; 
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.items-center {
+  align-items: center; 
 }
 
 .card:hover {
@@ -46,8 +109,22 @@
   justify-content: center;
 }
 
+.flight-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  padding: 20px; 
+}
+
+
+@media (max-width: 1024px) {
+  .card-section, .flight-list {
+    grid-template-columns: repeat(2, 1fr); 
+  }
+}
+
 @media (max-width: 768px) {
-  .card {
-    width: 90%;
+  .card-section, .flight-list {
+    grid-template-columns: repeat(1, 1fr); 
   }
 }
