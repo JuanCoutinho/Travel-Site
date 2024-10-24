@@ -1,5 +1,5 @@
-const clientId = "eVCpC7hT9Tdbjj7rwI0xChV8dn3C7Hkm";
-const clientSecret = "RxBqMY7TgUdGMoDq";
+const clientId = "YAlaZGKGvim8YUHyFB8rVVhHyn6ATcs5";
+const clientSecret = "1uYeaSO2zAfveFRM";
 const exchangeRateApiKey = "f0a82d5f3400636152941e1a";
 
 let regionToNameMap = {};
@@ -164,7 +164,6 @@ function formatDateToBrazilian(date) {
   return new Intl.DateTimeFormat("pt-BR", options).format(date);
 }
 
-
 async function loadRegionData() {
   return new Promise((resolve, reject) => {
     Papa.parse("../src/csv/airport_code.csv", {
@@ -217,6 +216,109 @@ async function fetchFlights(origin, destination, departureDate, adults) {
   }
 }
 
+document.getElementById("searchSubmit").addEventListener("click", async () => {
+  const searchQuery = document.getElementById("searchInput").value.trim().toLowerCase();
+  
+  const flightList = document.querySelector(".card-section");
+  flightList.innerHTML = "";
+
+  // Recarrega os dados de voos para garantir que tenhamos acesso a todos eles
+  try {
+    const exchangeRate = await fetchExchangeRate();
+    const userLocation = await getUserLocation();
+    const nearestAirport = findNearestAirport(userLocation.latitude, userLocation.longitude);
+    const origin = nearestAirport.iata;
+
+    const destinations = [
+      "JFK", "LAX", "LHR", "CDG", "NRT", "DXB", "SIN", "HKG", "SYD", "YYZ",
+      "FRA", "AMS", "PEK", "MIA", "GRU", "MEX", "ICN", "BKK", "IST", "SVO"
+    ];
+
+    const currentDate = new Date();
+    const startDate = new Date();
+    startDate.setDate(currentDate.getDate() + 14);
+
+    const dates = [];
+    for (let i = 0; i < 20; i++) {
+      const date = new Date(startDate);
+      date.setDate(startDate.getDate() + i); 
+      dates.push(date);
+    }
+
+    let totalFlightsDisplayed = 0;
+
+    for (const destination of destinations) {
+      for (const date of dates) {
+        if (totalFlightsDisplayed >= 100) {
+          console.log("Limite de 100 voos atingido.");
+          return;
+        }
+
+        const formattedDateForApi = date.toISOString().split("T")[0];
+        const flightsData = await fetchFlights(origin, destination, formattedDateForApi, 1);
+        const flights = flightsData.data.slice(0, 60);
+
+        flights.forEach((flight) => {
+          const arrivalIata = flight.itineraries[0].segments[0].arrival.iataCode;
+          const arrivalRegion = iataToStateMap[arrivalIata];
+          const arrivalMunicipality = arrivalRegion.municipality || "Município desconhecido";
+
+          // Verificar se o arrivalMunicipality corresponde à pesquisa do usuário
+          if (arrivalMunicipality.toLowerCase().includes(searchQuery)) {
+            if (totalFlightsDisplayed >= 100) return;
+
+            const priceInEur = flight.price.total;
+            const priceInBrl = (priceInEur * exchangeRate).toFixed(2);
+            const airlineCode = flight.itineraries[0].segments[0].carrierCode;
+            const airlineImageUrl = airlineLogos[airlineCode] || "https://cdn-icons-png.flaticon.com/512/6557/6557822.png";
+
+            const departureIata = flight.itineraries[0].segments[0].departure.iataCode;
+            const departureRegion = iataToStateMap[departureIata];
+            const departureMunicipality = departureRegion.municipality || "Município desconhecido";
+
+            const formattedDateForDisplay = formatDateToBrazilian(date);
+
+            const card = document.createElement("div");
+            card.classList.add("card");
+
+            const searchQueryUrl = encodeURIComponent(`${departureMunicipality} para ${arrivalMunicipality} ${formattedDateForDisplay}`);
+            const googleSearchUrl = `https://www.google.com/search?q=${searchQueryUrl}`;
+
+            card.innerHTML = `
+              <img src="./img/logotipo star2.png.png" alt="Starsearch" class="starsearch-logo">
+              <div class="flex flex-col">
+                <div class="card-header">
+                  <img src="${airlineImageUrl}" alt="Companhia" class="airline-logo">
+                </div>
+                <div class="card-content">
+                  <h3>${departureMunicipality} - ${arrivalMunicipality}</h3>
+                  <p>Preço: €${priceInEur} / R$${priceInBrl}</p>
+                  <p>Embarque: ${departureMunicipality}</p>
+                  <p>Destino: ${arrivalMunicipality}</p>
+                  <p>Data da viagem: ${formattedDateForDisplay}</p>
+                  <a href="${googleSearchUrl}" target="_blank" class="flight-link">Ver opções de voo</a>
+                </div>
+              </div>
+            `;
+
+            flightList.appendChild(card);
+            totalFlightsDisplayed++;
+          }
+        });
+
+        if (totalFlightsDisplayed >= 100) {
+          console.log("Limite de 100 voos atingido.");
+          return;
+        }
+      }
+    }
+  } catch (error) {
+    console.error("Erro ao buscar voos:", error);
+  }
+});
+
+const searchedDestinations = [];
+
 async function displayFlights() {
   try {
     await loadAirlineLogos();
@@ -230,10 +332,7 @@ async function displayFlights() {
     }
 
     const userLocation = await getUserLocation();
-    const nearestAirport = findNearestAirport(
-      userLocation.latitude,
-      userLocation.longitude
-    );
+    const nearestAirport = findNearestAirport(userLocation.latitude, userLocation.longitude);
 
     if (!nearestAirport) {
       console.error("Nenhum aeroporto encontrado nas proximidades.");
@@ -248,7 +347,6 @@ async function displayFlights() {
     ];
 
     const currentDate = new Date();
-    
     const startDate = new Date();
     startDate.setDate(currentDate.getDate() + 14);
 
@@ -262,7 +360,7 @@ async function displayFlights() {
     const flightList = document.querySelector(".card-section");
     flightList.innerHTML = "";
 
-    let totalFlightsDisplayed = 0; 
+    let totalFlightsDisplayed = 0;
 
     for (const destination of destinations) {
       for (const date of dates) {
@@ -274,37 +372,31 @@ async function displayFlights() {
         const formattedDateForApi = date.toISOString().split("T")[0];
         const formattedDateForDisplay = formatDateToBrazilian(date);
 
-        const flightsData = await fetchFlights(
-          origin,
-          destination,
-          formattedDateForApi,
-          1
-        );
+        const flightsData = await fetchFlights(origin, destination, formattedDateForApi, 1);
 
         const flights = flightsData.data.slice(0, 60); 
         flights.forEach((flight) => {
           if (totalFlightsDisplayed >= 100) return; 
+
           const priceInEur = flight.price.total;
           const priceInBrl = (priceInEur * exchangeRate).toFixed(2);
           const airlineCode = flight.itineraries[0].segments[0].carrierCode;
-          const airlineImageUrl =
-            airlineLogos[airlineCode] ||
-            "https://cdn-icons-png.flaticon.com/512/6557/6557822.png";
+          const airlineImageUrl = airlineLogos[airlineCode] || "https://cdn-icons-png.flaticon.com/512/6557/6557822.png";
 
-          const departureIata =
-            flight.itineraries[0].segments[0].departure.iataCode;
+          const departureIata = flight.itineraries[0].segments[0].departure.iataCode;
           const arrivalIata = flight.itineraries[0].segments[0].arrival.iataCode;
           const departureRegion = iataToStateMap[departureIata];
           const arrivalRegion = iataToStateMap[arrivalIata];
 
-          const departureState =
-            regionToNameMap[departureRegion.state] || departureIata;
-          const arrivalState = regionToNameMap[arrivalRegion.state] || arrivalIata;
+          const departureMunicipality = departureRegion.municipality || "Município desconhecido";
+          const arrivalMunicipality = arrivalRegion.municipality || "Município desconhecido";
 
-          const departureMunicipality =
-            departureRegion.municipality || "Município desconhecido";
-          const arrivalMunicipality =
-            arrivalRegion.municipality || "Município desconhecido";
+          // Armazenar arrivalMunicipality no array searchedDestinations
+          if (!searchedDestinations.includes(arrivalMunicipality)) {
+            searchedDestinations.push(arrivalMunicipality);
+          }
+          console.log("Adicionando destino ao array:", arrivalMunicipality);
+          console.log("Destinos pesquisados até agora:", searchedDestinations);
 
           const card = document.createElement("div");
           card.classList.add("card");
@@ -313,29 +405,29 @@ async function displayFlights() {
           const googleSearchUrl = `https://www.google.com/search?q=${searchQuery}`;
 
           card.innerHTML = `
-          <img src="./img/logotipo star2.png.png" alt="Starsearch" class="starsearch-logo">
-          <div class="flex flex-col">
-            <div class="card-header">
-              <img src="${airlineImageUrl}" alt="Companhia" class="airline-logo">
+            <img src="./img/logotipo star2.png.png" alt="Starsearch" class="starsearch-logo">
+            <div class="flex flex-col">
+              <div class="card-header">
+                <img src="${airlineImageUrl}" alt="Companhia" class="airline-logo">
+              </div>
+              <div class="card-content">
+                <h3>${departureMunicipality} - ${arrivalMunicipality}</h3>
+                <p>Preço: €${priceInEur} / R$${priceInBrl}</p>
+                <p>Embarque: ${departureMunicipality}</p>
+                <p>Destino: ${arrivalMunicipality}</p>
+                <p>Data da viagem: ${formattedDateForDisplay}</p>
+                <a href="${googleSearchUrl}" target="_blank" class="flight-link">Ver opções de voo</a>
+              </div>
             </div>
-            <div class="card-content">
-              <h3>${departureMunicipality} - ${arrivalMunicipality}</h3>
-              <p>Preço: €${priceInEur} / R$${priceInBrl}</p>
-              <p>Embarque: ${departureState} (${departureMunicipality})</p>
-              <p>Destino: ${arrivalState} (${arrivalMunicipality})</p>
-              <p>Data da viagem: ${formattedDateForDisplay}</p>
-              <a href="${googleSearchUrl}" target="_blank" class="flight-link">Ver opções de voo</a>
-            </div>
-          </div>
-        `;        
+          `;
 
           flightList.appendChild(card);
-          totalFlightsDisplayed++; 
+          totalFlightsDisplayed++;
         });
 
         if (totalFlightsDisplayed >= 100) {
           console.log("Limite de 100 voos atingido.");
-          return; 
+          return;
         }
       }
     }

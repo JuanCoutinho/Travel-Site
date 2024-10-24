@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="style/style.css" />
     <link rel="stylesheet" href="style/card.css" />
     <link rel="stylesheet" href="style/footer.css" />
+    <link rel="stylesheet" href="style/modal.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.css"
@@ -38,6 +39,24 @@
         baratas do mercado!
       </p>
     </header>
+
+    <div class="button-container">
+      <button id="searchButton">Pesquisar</button>
+    </div>
+
+    <div id="searchModal" class="modal">
+      <div class="modal-content">
+        <span class="close-button">&times;</span>
+        <h2>Buscar Voos</h2>
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Digite o destino..."
+        />
+        <button id="searchSubmit">Buscar</button>
+      </div>
+    </div>
+    
 
     <div class="card-section"></div>
     <section class="card-section" id="viagens">
@@ -104,5 +123,6 @@
     <script src="js/api/notices.js"></script>
     <script src="js/display_card.js"></script>
     <script src="js/menu.js"></script>
+    <script src="js/search_modal.js"></script>
   </body>
 </html>

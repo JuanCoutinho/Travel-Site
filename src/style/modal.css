@@ -1,0 +1,99 @@
+/* Estilo do Modal */
+.modal {
+  display: none; /* Ocultar o modal por padrão */
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(
+    0,
+    0,
+    0,
+    0.6
+  ); /* Cor de fundo do modal com mais opacidade */
+}
+
+.modal-content {
+  background-color: #ffffff; /* Fundo branco para o conteúdo do modal */
+  margin: 10% auto; /* Margem superior para centralizar */
+  padding: 20px;
+  border-radius: 8px; /* Bordas arredondadas */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra para dar profundidade */
+  max-width: 500px; /* Largura máxima do modal */
+  width: 90%; /* Largura em porcentagem para responsividade */
+}
+
+.close-button {
+  color: #555; /* Cor do botão de fechar */
+  float: right;
+  font-size: 24px; /* Tamanho menor */
+  font-weight: bold;
+}
+
+.close-button:hover,
+.close-button:focus {
+  color: #ff0000; /* Cor vermelha ao passar o mouse */
+  text-decoration: none;
+  cursor: pointer;
+}
+
+#searchInput {
+  width: 100%; /* Largura total do input */
+  padding: 12px; /* Padding para o input */
+  margin: 10px 0; /* Margem em cima e embaixo */
+  border: 1px solid #ccc; /* Bordas */
+  border-radius: 5px; /* Bordas arredondadas */
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* Sombra interna */
+  font-size: 16px; /* Tamanho da fonte */
+  transition: border-color 0.3s; /* Transição suave para mudança de cor */
+}
+
+#searchInput:focus {
+  border-color: #007bff; /* Cor da borda ao focar */
+  outline: none; /* Remove a borda padrão do navegador */
+}
+
+#searchSubmit {
+  background-color: #007bff; /* Cor de fundo do botão de buscar */
+  color: #ffffff; /* Cor do texto */
+  padding: 10px 15px; /* Padding do botão */
+  border: none; /* Sem borda */
+  border-radius: 5px; /* Bordas arredondadas */
+  cursor: pointer; /* Cursor de mão ao passar o mouse */
+  font-size: 16px; /* Tamanho da fonte */
+  transition: background-color 0.3s; /* Transição suave para a cor de fundo */
+}
+
+#searchSubmit:hover {
+  background-color: #0056b3; /* Cor mais escura ao passar o mouse */
+}
+
+.button-container {
+  display: flex; /* Usar flexbox para centralizar */
+  justify-content: center; /* Centralizar horizontalmente */
+  margin: 20px 0; /* Margem superior e inferior para espaçamento */
+}
+
+#searchButton {
+  background-color: #28a745; /* Cor de fundo verde */
+  color: #ffffff; /* Cor do texto */
+  padding: 10px 15px; /* Padding do botão */
+  border: none; /* Sem borda */
+  border-radius: 5px; /* Bordas arredondadas */
+  cursor: pointer; /* Cursor de mão ao passar o mouse */
+  font-size: 16px; /* Tamanho da fonte */
+  transition: background-color 0.3s, transform 0.2s; /* Transições suaves */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Sombra para dar profundidade */
+}
+
+#searchButton:hover {
+  background-color: #218838; /* Cor mais escura ao passar o mouse */
+  transform: translateY(-2px); /* Leve elevação ao passar o mouse */
+}
+
+#searchButton:active {
+  transform: translateY(1px); /* Efeito de pressionar ao clicar */
+}
