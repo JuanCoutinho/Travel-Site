@@ -14,8 +14,7 @@
     />
 
     <style>
-
-      /* Loader Styles */
+/* Loader Styles */
 .loader {
   position: fixed;
   z-index: 999;
@@ -25,8 +24,10 @@
   height: 100%;
   background-color: #ffcc00; /* Amarelo */
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
+  color: #fff;
 }
 
 .loader::before {
@@ -34,9 +35,10 @@
   width: 60px;
   height: 60px;
   border: 8px solid #fff;
-  border-top: 8px solid #ffcc00; /* Cor de destaque do loader */
+  border-top: 8px solid #ffcc00;
   border-radius: 50%;
   animation: spin 2s linear infinite;
+  margin-bottom: 20px; /* Espaço entre o círculo e a mensagem */
 }
 
 @keyframes spin {
@@ -46,6 +48,14 @@
   100% {
     transform: rotate(360deg);
   }
+}
+
+/* Loader Message Styles */
+.loader-message {
+  font-size: 18px;
+  text-align: center;
+  color: #fff; /* Cor branca para o texto */
+  margin-top: 20px;
 }
 
 /* Esconde o loader após o carregamento */
@@ -81,7 +91,10 @@ body.loaded .loader {
         baratas do mercado!
       </p>
     </header>
-  <div id="loader" class="loader"></div>
+  <div id="loader" class="loader">
+    <p class="loader-message">Aguarde, estamos buscando os melhores voos para você...</p>
+  </div>
+
     <div class="button-container">
       <button id="searchButton">Pesquisar</button>
     </div>
@@ -159,12 +172,12 @@ body.loaded .loader {
       </div>
     </footer>
 
-    <script>
+<script>
   window.addEventListener("load", function() {
-    // Aguarda 4 segundos para remover o loader
+    // Aguarda 5 segundos para remover o loader
     setTimeout(function() {
       document.body.classList.add("loaded");
-    }, 4000); // 4000 ms = 4 segundos
+    }, 5000); // 5000 ms = 5 segundos
   });
 </script>
 
