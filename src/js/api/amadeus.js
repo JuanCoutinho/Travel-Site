@@ -1,5 +1,5 @@
-const clientId = "k2wiffvdlH3Uhb05j7NGyw2GrO6rzY4E"; 
-const clientSecret = "4UtBaRC3A15aODsi"; 
+const clientId = "YAlaZGKGvim8YUHyFB8rVVhHyn6ATcs5";
+const clientSecret = "1uYeaSO2zAfveFRM";
 
 async function getAuthToken() {
   try {
