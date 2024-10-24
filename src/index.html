@@ -12,6 +12,48 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.css"
     />
+
+    <style>
+
+      /* Loader Styles */
+.loader {
+  position: fixed;
+  z-index: 999;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #ffcc00; /* Amarelo */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loader::before {
+  content: "";
+  width: 60px;
+  height: 60px;
+  border: 8px solid #fff;
+  border-top: 8px solid #ffcc00; /* Cor de destaque do loader */
+  border-radius: 50%;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Esconde o loader após o carregamento */
+body.loaded .loader {
+  display: none;
+}
+
+    </style>
   </head>
   <body>
     <header>
@@ -39,7 +81,7 @@
         baratas do mercado!
       </p>
     </header>
-
+  <div id="loader" class="loader"></div>
     <div class="button-container">
       <button id="searchButton">Pesquisar</button>
     </div>
@@ -117,6 +159,16 @@
       </div>
     </footer>
 
+    <script>
+  window.addEventListener("load", function() {
+    // Aguarda 4 segundos para remover o loader
+    setTimeout(function() {
+      document.body.classList.add("loaded");
+    }, 4000); // 4000 ms = 4 segundos
+  });
+</script>
+
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
