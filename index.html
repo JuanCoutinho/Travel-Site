@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rota Express</title>
+    <link rel="stylesheet" href="/Travel-Site/src/style/style.css" />
+    <link rel="stylesheet" href="/Travel-Site/src/style/footer.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.css"
+    />
+
+    <style>
+/* Loader Styles */
+.loader {
+  position: fixed;
+  z-index: 999;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #ffcc00; /* Amarelo */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+}
+
+.loader::before {
+  content: "";
+  width: 60px;
+  height: 60px;
+  border: 8px solid #fff;
+  border-top: 8px solid #ffcc00;
+  border-radius: 50%;
+  animation: spin 2s linear infinite;
+  margin-bottom: 20px; /* Espaço entre o círculo e a mensagem */
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Loader Message Styles */
+.loader-message {
+  font-size: 28px;
+  text-align: center;
+  color: #fff; /* Cor branca para o texto */
+  margin-top: 20px;
+}
+
+/* Esconde o loader após o carregamento */
+body.loaded .loader {
+  display: none;
+}
+
+.cta-button {
+  display: inline-block; /* Para que o botão fique na mesma linha */
+  font: bold;
+  background-color: #ffcc00; /* Cor de fundo */
+  color: #000000; /* Cor do texto */
+  padding: 15px 30px; /* Espaçamento interno do botão */
+  text-align: center; /* Centraliza o texto */
+  text-decoration: none; /* Remove o sublinhado */
+  border-radius: 5px; /* Bordas arredondadas */
+  font-size: 18px; /* Tamanho da fonte */
+  margin-top: 20px; /* Espaçamento acima do botão */
+  transition: background-color 0.3s; /* Efeito de transição */
+}
+
+.cta-button:hover {
+  background-color: #e6b800; /* Cor de fundo ao passar o mouse */
+}
+
+
+    </style>
+  </head>
+  <body>
+    <header>
+      <nav class="navbar">
+        <div class="menu-toggle">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <ul class="nav-links">
+          <li><a href="#home">Home</a></li>
+          <li><a href="#viagens">Viagens</a></li>
+          <li><a href="#sobre">Sobre</a></li>
+          <li><a href="#informacoes">Informações</a></li>
+          <li><a href="search.html">Buscar Voos</a></li>
+        </ul>
+      </nav>
+
+      <div class="logo" id="home">
+        <h1>Rota Express</h1>
+        <img src="/Travel-Site/src/img/logotipo star.png" alt="Logo Rota Express" width="200px" />
+      </div>
+      <p>
+        Rota Express: Fácil, rápido e dinâmico. Confira agora as viagens mais
+        baratas do mercado!
+      </p>
+
+      <a href="/Travel-Site/src/home.html" class="cta-button">Reserve Sua Viagem Agora!</a>
+    </header>
+    
+
+    <section class="principles-section" id="sobre">
+      <h2>Nossos Princípios</h2>
+      <div class="principles-container">
+        <div class="principle">
+          <img src="/Travel-Site/src/img/money_icon.png" alt="Ícone 1" width="80px" />
+          <h3>Viagens Baratas</h3>
+          <p>
+            Ajudamos você a encontrar as viagens mais econômicas do mercado.
+          </p>
+        </div>
+        <div class="principle">
+          <img src="/Travel-Site/src/img/time_icon.png" alt="Ícone 2" width="80px" />
+          <h3>Poupar Tempo</h3>
+          <p>
+            Nosso objetivo é agilizar o processo de busca para poupar seu tempo.
+          </p>
+        </div>
+        <div class="principle">
+          <img src="/Travel-Site/src/img/search_icon.png" alt="Ícone 3" width="80px" />
+          <h3>Diferencial no Mercado</h3>
+          <p>
+            Temos a melhor tecnologia para facilitar a busca das melhores
+            opções.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="info-section" id="informacoes">
+      <h2>Notícias de Aviação</h2>
+      <div class="carousel">
+        <div class="carousel-item"></div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="footer-container">
+        <div class="footer-left">
+          <h4>Rota Express</h4>
+          <p>Fácil, rápido e dinâmico.</p>
+          <p>&copy; 2024 Rota Express. Todos os direitos reservados.</p>
+        </div>
+        <div class="footer-right">
+          <ul>
+            <li><a href="#home">Home</a></li>
+            <li><a href="#viagens">Viagens</a></li>
+            <li><a href="#sobre">Sobre</a></li>
+            <li><a href="#informacoes">Informações</a></li>
+            <li><a href="search.html">Buscar Voos</a></li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+
+<script>
+  window.addEventListener("load", function() {
+    // Aguarda 5 segundos para remover o loader
+    setTimeout(function() {
+      document.body.classList.add("loaded");
+    }, 5000); // 5000 ms = 5 segundos
+  });
+</script>
+
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <script src="/Travel-Site/src/js/notices.js"></script>
+    <script src="js/display_card.js"></script>
+    <script src="js/menu.js"></script>
+    <script src="js/search_modal.js"></script>
+  </body>
+</html>
