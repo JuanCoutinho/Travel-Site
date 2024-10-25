@@ -5,20 +5,27 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Rota Express</title>
+  <link rel="stylesheet" href="style/style.css" />
   <link rel="stylesheet" href="style/card.css" />
   <link rel="stylesheet" href="style/footer.css" />
   <link rel="stylesheet" href="style/modal.css" />
+  <link rel="stylesheet" href="/src/style/home.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.css" />
   <style>
+    /* Estilos gerais */
     body {
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 0;
       background-color: #f4f4f4;
+      /* Cor de fundo geral */
       color: #333;
+      /* Cor do texto padrão */
       line-height: 1.6;
+      /* Melhor legibilidade */
     }
 
+    /* Loader Styles */
     .loader {
       position: fixed;
       z-index: 999;
@@ -27,7 +34,9 @@
       width: 100%;
       height: 100%;
       background-color: #ffcc00;
+      /* Amarelo */
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       color: #fff;
@@ -65,6 +74,7 @@
       display: none;
     }
 
+    /* Estilos da Navbar */
     .navbar {
       display: flex;
       justify-content: space-between;
@@ -76,8 +86,10 @@
 
     .menu-toggle {
       display: none;
+      /* Oculta para desktop, pode ser ativado para mobile */
       cursor: pointer;
       font-size: 24px;
+      /* Aumenta o tamanho do ícone do menu */
       color: #f9f9f9;
     }
 
@@ -110,6 +122,7 @@
 
     .button-container {
       margin-left: auto;
+      /* Move o botão para a direita */
     }
 
     #searchButton {
@@ -127,8 +140,10 @@
       background-color: #e6b800;
     }
 
+    /* Estilos do Modal */
     .modal {
       display: none;
+      /* Inicialmente escondido */
       position: fixed;
       z-index: 1000;
       left: 0;
@@ -145,8 +160,8 @@
       padding: 20px;
       border-radius: 5px;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-      width: 90%;
-      max-width: 400px;
+      width: 400px;
+      /* Largura do modal */
     }
 
     .close-button {
@@ -162,8 +177,10 @@
       border: 1px solid #ccc;
       border-radius: 5px;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+      /* Sombra para o campo de entrada */
     }
 
+    /* Estilos do botão de pesquisa */
     #searchSubmit {
       background-color: #ffcc00;
       color: #272A33;
@@ -179,28 +196,7 @@
       background-color: #e6b800;
     }
 
-    .card-section {
-      padding: 20px;
-      background-color: #fff;
-      border-radius: 5px;
-      margin: 20px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
-
-    .card {
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      padding: 15px;
-      margin: 2px;
-      background-color: #f9f9f9;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-      transition: transform 0.3s;
-    }
-
-    .card:hover {
-      transform: translateY(-5px);
-    }
-
+    /* Estilos do Rodapé */
     footer {
       background-color: #272A33;
       color: #fff;
@@ -217,12 +213,10 @@
 
     .footer-left {
       flex: 1;
-      margin: 10px;
     }
 
     .footer-right {
       flex: 1;
-      margin: 10px;
     }
 
     .footer-right ul {
@@ -244,46 +238,41 @@
       text-decoration: underline;
     }
 
+    /* Media Queries para Responsividade */
     @media (max-width: 768px) {
       .menu-toggle {
         display: block;
+        /* Exibe o menu hamburger em telas pequenas */
       }
 
       .nav-links {
         display: none;
+        /* Esconde os links da navbar */
         flex-direction: column;
+        /* Muda para coluna */
         position: absolute;
         top: 60px;
+        /* Para evitar sobreposição */
         left: 0;
         width: 100%;
         background-color: #272A33;
+        /* Cor de fundo do menu */
         padding: 10px 0;
       }
 
       .nav-links.active {
         display: flex;
+        /* Exibe os links quando o menu está ativo */
       }
 
       .nav-links li {
         margin: 10px 0;
+        /* Margem vertical entre os links */
       }
 
       #searchInput {
         margin: 10px 0;
-      }
-
-      .card {
-        width: 100%;
-      }
-
-      .footer-container {
-        flex-direction: column;
-        text-align: center;
-      }
-
-      .footer-left,
-      .footer-right {
-        margin-bottom: 10px;
+        /* Margem para separar do botão */
       }
     }
   </style>
@@ -298,9 +287,9 @@
   <section>
     <nav class="navbar">
       <div class="menu-toggle">
-        <span class="span"></span>
-        <span class="span"></span>
-        <span class="span"></span>
+        <span></span>
+        <span></span>
+        <span></span>
       </div>
       <ul class="nav-links">
         <li><a href="#home">Home</a></li>
@@ -313,74 +302,97 @@
         <button id="searchButton">Filtros</button>
       </div>
     </nav>
-  </section>
 
-  <div id="searchModal" class="modal">
-    <div class="modal-content">
-      <span class="close-button">&times;</span>
-      <h2>Buscar Voos</h2>
-      <input type="text" id="searchInput" placeholder="Digite o destino..." />
-      <button id="searchSubmit">Buscar</button>
-    </div>
-  </div>
+    <!-- Script para menu responsivo e rolagem -->
+    <script>
+      // Função para mostrar/ocultar menu em dispositivos móveis
+      const menuToggle = document.querySelector('.menu-toggle');
+      const navLinks = document.querySelector('.nav-links');
 
-  <center>
-    <section class="card-section">
-      <div class="card">
-        <h2>Ofertas de Viagem</h2>
-        <p>Descubra as melhores ofertas de viagem personalizadas para você!</p>
+      menuToggle.addEventListener('click', () => {
+        navLinks.classList.toggle('active');
+      });
+
+      // Mudar cor da navbar ao rolar a página
+      window.addEventListener('scroll', function () {
+        const navbar = document.querySelector('.navbar');
+        navbar.classList.toggle('scrolled', window.scrollY > 0);
+      });
+    </script>
+
+    <div id="searchModal" class="modal">
+      <div class="modal-content">
+        <span class="close-button">&times;</span>
+        <h2>Buscar Voos</h2>
+        <input type="text" id="searchInput" placeholder="Digite o destino..." />
+        <button id="searchSubmit">Buscar</button>
       </div>
+    </div>
+
+
+    <br><br><br><br><br><br><br><br>
+    <center>
+      <h1>Melhores ofertas de Voos</h1>
+    </center>
+    <br>
+    <section class="card-section" id="viagens">
+      <div class="flight-list"></div>
     </section>
-  </center>
 
-  <footer>
-    <div class="footer-container">
-      <div class="footer-left">
-        <p>Rota Express &copy; 2023 - Todos os direitos reservados.</p>
+    <footer>
+      <div class="footer-container">
+        <div class="footer-left">
+          <h4>Rota Express</h4>
+          <p>Fácil, rápido e dinâmico.</p>
+          <p>&copy; 2024 Rota Express. Todos os direitos reservados.</p>
+        </div>
+        <div class="footer-right">
+          <ul>
+            <li><a href="#home">Home</a></li>
+            <li><a href="#viagens">Viagens</a></li>
+            <li><a href="#sobre">Sobre</a></li>
+            <li><a href="#informacoes">Informações</a></li>
+            <li><a href="search.html">Buscar Voos</a></li>
+          </ul>
+        </div>
       </div>
-      <div class="footer-right">
-        <ul>
-          <li><a href="#">Facebook</a></li>
-          <li><a href="#">Instagram</a></li>
-          <li><a href="#">Twitter</a></li>
-        </ul>
-      </div>
-    </div>
-  </footer>
+    </footer>
 
-  <script>
-    window.addEventListener("load", function () {
-      const loader = document.getElementById("loader");
-      setTimeout(() => {
-        loader.style.display = "none";
-      }, 2000);
-    });
+    <script>
+      window.addEventListener("load", function () {
+        // Aguarda 5 segundos para remover o loader
+        setTimeout(function () {
+          document.body.classList.add("loaded");
+        }, 5000); // 5000 ms = 5 segundos
+      });
 
-    const menuToggle = document.querySelector(".menu-toggle");
-    const navLinks = document.querySelector(".nav-links");
+      // Adicione este código ao seu script existente
+      $(document).ready(function () {
+        $('#searchSubmit').on('click', function () {
+          // Mostra o loader
+          $('#loader').show();
 
-    menuToggle.addEventListener("click", () => {
-      navLinks.classList.toggle("active");
-    });
+          // Simula uma espera de 3 segundos (3000 ms)
+          setTimeout(function () {
+            // Oculta o loader
+            $('#loader').hide();
 
-    const searchButton = document.getElementById("searchButton");
-    const searchModal = document.getElementById("searchModal");
-    const closeButton = document.querySelector(".close-button");
+            // Aqui você pode adicionar a lógica de busca de voos
+            // Por exemplo, redirecionar para outra página ou fazer uma requisição AJAX
+          }, 3000); // 3000 ms = 3 segundos
+        });
+      });
 
-    searchButton.addEventListener("click", () => {
-      searchModal.style.display = "flex";
-    });
+    </script>
 
-    closeButton.addEventListener("click", () => {
-      searchModal.style.display = "none";
-    });
 
-    window.addEventListener("click", (event) => {
-      if (event.target === searchModal) {
-        searchModal.style.display = "none";
-      }
-    });
-  </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <script src="js/api/notices.js"></script>
+    <script src="js/display_card.js"></script>
+    <script src="js/menu.js"></script>
+    <script src="js/search_modal.js"></script>
 </body>
 
 </html>

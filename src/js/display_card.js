@@ -283,23 +283,24 @@ document.getElementById("searchSubmit").addEventListener("click", async () => {
 
             const searchQueryUrl = encodeURIComponent(`${departureMunicipality} para ${arrivalMunicipality} ${formattedDateForDisplay}`);
             const googleSearchUrl = `https://www.google.com/search?q=${searchQueryUrl}`;
-
             card.innerHTML = `
-              <img src="./img/logotipo star2.png.png" alt="Starsearch" class="starsearch-logo">
-              <div class="flex flex-col">
-                <div class="card-header">
-                  <img src="${airlineImageUrl}" alt="Companhia" class="airline-logo">
+            <div class="bg-white rounded-lg shadow-lg p-4 max-w-sm mx-auto">
+           <img src="./img/logotipo star2.png.png" alt="Starsearch" style="max-width: 28px; height: auto; display: block; margin: 0 auto 16px;">
+            <div class="flex flex-col items-center">
+                <div class="card-header mb-4">
+                  <img src="${airlineImageUrl}" alt="Companhia" class="airline-logo w-12 h-12 object-contain">
                 </div>
-                <div class="card-content">
-                  <h3>${departureMunicipality} - ${arrivalMunicipality}</h3>
-                  <p>Preço: €${priceInEur} / R$${priceInBrl}</p>
-                  <p>Embarque: ${departureMunicipality}</p>
-                  <p>Destino: ${arrivalMunicipality}</p>
-                  <p>Data da viagem: ${formattedDateForDisplay}</p>
-                  <a href="${googleSearchUrl}" target="_blank" class="flight-link">Ver opções de voo</a>
+                <div class="card-content text-center">
+                  <h3 class="text-lg font-semibold mb-2">${departureMunicipality} - ${arrivalMunicipality}</h3>
+                  <p class="text-gray-700">Preço: €${priceInEur} / R$${priceInBrl}</p>
+                  <p class="text-gray-600">Embarque: ${departureMunicipality}</p>
+                  <p class="text-gray-600">Destino: ${arrivalMunicipality}</p>
+                  <p class="text-gray-600 mb-4">Data da viagem: ${formattedDateForDisplay}</p>
+                  <a href="${googleSearchUrl}" target="_blank" class="flight-link text-blue-500 hover:underline">Ver opções de voo</a>
                 </div>
               </div>
-            `;
+            </div>
+          `;          
 
             flightList.appendChild(card);
             totalFlightsDisplayed++;
