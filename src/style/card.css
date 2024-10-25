@@ -30,7 +30,11 @@
 }
 
 .starsearch-logo {
-  width: 10%;
+  width: 30px;
+  display: block;
+  float: left;
+  margin-left: 0; /* Garante que não haja margem à esquerda */
+  padding: 0; /* Remove qualquer padding */
 }
 
 .card-header {
@@ -40,7 +44,7 @@
 }
 
 .airline-logo {
-  width: 50px;
+  width: 60px;
   height: auto; 
   object-fit: contain;
 }

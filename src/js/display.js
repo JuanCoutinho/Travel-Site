@@ -41,27 +41,26 @@ async function renderFlights(flights, exchangeRate, destinationImageUrl, departu
     const finalImageUrl = arrivalAirportImageUrl || imageUrl;
 
     const flightCard = document.createElement("div");
-    flightCard.classList.add("bg-white", "shadow-lg", "rounded-lg", "p-4", "mb-4", "flex", "items-center");
 
-    const imageElement = `<img src="${finalImageUrl}" alt="Aeroporto" class="w-24 h-24 rounded-lg mr-4">`;
+    const imageElement = `<img src="${finalImageUrl}" alt="Aeroporto">`;
     const flightInfo = `
-      <div class="flex-grow">
-        <h2 class="text-xl font-bold mb-2">${arrival.iataCode} (${arrival.at.split("T")[0]})</h2>
-        <p class="text-gray-500 mb-1">Partida: ${departure.iataCode} (${departure.at.split("T")[0]})</p>
-        <p class="text-gray-500 mb-1">Chegada: ${arrival.iataCode} (${arrival.at.split("T")[0]})</p>
-        <p class="text-gray-700 font-bold mb-1">Preço: R$ ${priceInBRL}</p>
-        <a href="${googleFlightsUrlBase}${departure.iataCode}.${arrival.iataCode}.${departure.at.split("T")[0]}/;f=${departure.iataCode};t=${arrival.iataCode};d=${departure.at.split("T")[0]}" target="_blank" class="text-blue-500 underline">Ver no Google Flights</a>
+      <div>
+        <h2>${arrival.iataCode} (${arrival.at.split("T")[0]})</h2>
+        <p>Partida: ${departure.iataCode} (${departure.at.split("T")[0]})</p>
+        <p>Chegada: ${arrival.iataCode} (${arrival.at.split("T")[0]})</p>
+        <p>Preço: R$ ${priceInBRL}</p>
+        <a href="${googleFlightsUrlBase}${departure.iataCode}.${arrival.iataCode}.${departure.at.split("T")[0]}/;f=${departure.iataCode};t=${arrival.iataCode};d=${departure.at.split("T")[0]}" target="_blank">Ver no Google Flights</a>
       </div>`;
     const airlineInfo = `
-      <div class="text-right ml-12">
-        <img src="${airlineImageUrl}" alt="Companhia" class="w-14 h-auto mb-2 mx-auto">
-        <p class="text-sm font-semibold">${airlineName}</p>
-        <p class="text-xs text-gray-500">Econômica</p>
+      <div>
+        <img src="${airlineImageUrl}" alt="Companhia">
+        <p>${airlineName}</p>
+        <p>Econômica</p>
       </div>`;
-
-    flightCard.innerHTML = `<div class="flex">${imageElement}${flightInfo}${airlineInfo}</div>`;
+    
+    flightCard.innerHTML = `<div>${imageElement}${flightInfo}${airlineInfo}</div>`;
     resultsContainer.appendChild(flightCard);
-  }
+      }
 }
 
 async function displayFlights(flights, destinationImageUrl, departureInput, arrivalInput) {

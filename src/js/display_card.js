@@ -285,7 +285,8 @@ document.getElementById("searchSubmit").addEventListener("click", async () => {
             const googleSearchUrl = `https://www.google.com/search?q=${searchQueryUrl}`;
             card.innerHTML = `
             <div class="bg-white rounded-lg shadow-lg p-4 max-w-sm mx-auto">
-           <img src="./img/logotipo star2.png.png" alt="Starsearch" style="max-width: 28px; height: auto; display: block; margin: 0 auto 16px;">
+           <img src="./img/logotipo star2.png.png" alt="Starsearch" style="max-width: 28px; height: auto; display: block; margin: 0 0 16px 0;">
+
             <div class="flex flex-col items-center">
                 <div class="card-header mb-4">
                   <img src="${airlineImageUrl}" alt="Companhia" class="airline-logo w-12 h-12 object-contain">
