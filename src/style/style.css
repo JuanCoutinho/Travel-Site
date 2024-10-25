@@ -143,12 +143,6 @@ header p {
   font-size: 1em;
 }
 
-.card-img {
-  width: 100%;
-  height: auto;
-  border-radius: 10px;
-}
-
 .principles-section {
   text-align: center;
   padding: 50px;
@@ -330,15 +324,23 @@ header p {
   }
 
   .card-section {
-    display: block;
-    padding: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Garante que os cards se adaptem ao tamanho da tela */
+    gap: 20px;
+    padding: 50px;
+    justify-content: center;
   }
+  
 
-  .card {
-    width: 100%;
-    margin: 10px 0;
-  }
-
+.card {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: left;
+  width: 100%;
+  margin: 10px 0; /* Adiciona espaço entre os cards */
+}
   .info-section {
     padding: 30px;
   }
