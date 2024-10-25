@@ -41,26 +41,46 @@ async function renderFlights(flights, exchangeRate, destinationImageUrl, departu
     const finalImageUrl = arrivalAirportImageUrl || imageUrl;
 
     const flightCard = document.createElement("div");
+    const imageElement = `<img src="${finalImageUrl}" alt="Aeroporto" style="width: 100%; height: auto; border-radius: 4px 4px 0 0;">`;
 
-    const imageElement = `<img src="${finalImageUrl}" alt="Aeroporto">`;
     const flightInfo = `
-      <div>
-        <h2>${arrival.iataCode} (${arrival.at.split("T")[0]})</h2>
-        <p>Partida: ${departure.iataCode} (${departure.at.split("T")[0]})</p>
-        <p>Chegada: ${arrival.iataCode} (${arrival.at.split("T")[0]})</p>
-        <p>Preço: R$ ${priceInBRL}</p>
-        <a href="${googleFlightsUrlBase}${departure.iataCode}.${arrival.iataCode}.${departure.at.split("T")[0]}/;f=${departure.iataCode};t=${arrival.iataCode};d=${departure.at.split("T")[0]}" target="_blank">Ver no Google Flights</a>
-      </div>`;
+  <div style="padding: 12px; font-family: Arial, sans-serif; background-color: #fff;">
+    <h2 style="font-size: 1.2rem; color: #333; margin-bottom: 4px;">
+      ${arrival.iataCode} (${arrival.at.split("T")[0]})
+    </h2>
+    <p style="color: #777; margin-bottom: 4px;">
+      Partida: ${departure.iataCode} (${departure.at.split("T")[0]})
+    </p>
+    <p style="color: #777; margin-bottom: 4px;">
+      Chegada: ${arrival.iataCode} (${arrival.at.split("T")[0]})
+    </p>
+    <p style="font-weight: bold; color: #f1c40f; margin-bottom: 8px;">
+      Preço: R$ ${priceInBRL}
+    </p>
+    <a href="${googleFlightsUrlBase}${departure.iataCode}.${arrival.iataCode}.${departure.at.split("T")[0]}/;f=${departure.iataCode};t=${arrival.iataCode};d=${departure.at.split("T")[0]}"
+      target="_blank"
+      style="display: inline-block; padding: 6px 12px; background-color: #f1c40f; color: white; text-decoration: none; border-radius: 4px; font-size: 0.9rem;">
+      Ver no Google Flights
+    </a>
+  </div>`;
+
     const airlineInfo = `
-      <div>
-        <img src="${airlineImageUrl}" alt="Companhia">
-        <p>${airlineName}</p>
-        <p>Econômica</p>
-      </div>`;
-    
-    flightCard.innerHTML = `<div>${imageElement}${flightInfo}${airlineInfo}</div>`;
+  <div style="display: flex; align-items: center; padding: 8px; background-color: #f9f9f9; border-top: 1px solid #eee;">
+    <img src="${airlineImageUrl}" alt="Companhia" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 12px;">
+    <div>
+      <p style="font-size: 1rem; font-weight: bold; color: #333;">
+        ${airlineName}
+      </p>
+      <p style="color: #999; font-size: 0.85rem;">Econômica</p>
+    </div>
+  </div>`;
+
+    flightCard.innerHTML = `<div style="border: 1px solid #eee; border-radius: 4px; overflow: hidden; max-width: 320px; margin: 12px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);">
+  ${imageElement}${flightInfo}${airlineInfo}
+</div>`;
     resultsContainer.appendChild(flightCard);
-      }
+
+  }
 }
 
 async function displayFlights(flights, destinationImageUrl, departureInput, arrivalInput) {
