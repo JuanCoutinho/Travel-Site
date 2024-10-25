@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rota Express</title>
+  <link rel="stylesheet" href="style/style.css" />
+  <link rel="stylesheet" href="style/card.css" />
+  <link rel="stylesheet" href="style/footer.css" />
+  <link rel="stylesheet" href="style/modal.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.css" />
+  <style>
+    /* Estilos gerais */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+      /* Cor de fundo geral */
+      color: #333;
+      /* Cor do texto padrão */
+      line-height: 1.6;
+      /* Melhor legibilidade */
+    }
+
+    /* Loader Styles */
+    .loader {
+      position: fixed;
+      z-index: 999;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #ffcc00;
+      /* Amarelo */
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+    }
+
+    .loader::before {
+      content: "";
+      width: 60px;
+      height: 60px;
+      border: 8px solid #fff;
+      border-top: 8px solid #ffcc00;
+      border-radius: 50%;
+      animation: spin 2s linear infinite;
+      margin-bottom: 20px;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .loader-message {
+      font-size: 28px;
+      text-align: center;
+      color: #fff;
+      margin-top: 20px;
+    }
+
+    body.loaded .loader {
+      display: none;
+    }
+
+    /* Estilos da Navbar */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #272A33;
+      padding: 10px 20px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .menu-toggle {
+      display: none;
+      /* Oculta para desktop, pode ser ativado para mobile */
+      cursor: pointer;
+      font-size: 24px;
+      /* Aumenta o tamanho do ícone do menu */
+      color: #f9f9f9;
+    }
+
+    .span {
+      margin-top: 5px;
+      color: #e6b800;
+    }
+
+    .nav-links {
+      list-style: none;
+      display: flex;
+    }
+
+    .nav-links li {
+      margin: 0 15px;
+    }
+
+    .nav-links a {
+      color: #ffffff;
+      text-decoration: none;
+      padding: 5px 10px;
+      transition: background-color 0.3s, color 0.3s;
+      border-radius: 5px;
+    }
+
+    .nav-links a:hover {
+      background-color: #ffcc00;
+      color: #272A33;
+    }
+
+    .button-container {
+      margin-left: auto;
+      /* Move o botão para a direita */
+    }
+
+    #searchButton {
+      background-color: #ffcc00;
+      color: #272A33;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    #searchButton:hover {
+      background-color: #e6b800;
+    }
+
+    /* Estilos do Modal */
+    .modal {
+      display: none;
+      /* Inicialmente escondido */
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      width: 400px;
+      /* Largura do modal */
+    }
+
+    .close-button {
+      cursor: pointer;
+      font-size: 20px;
+      float: right;
+    }
+
+    #searchInput {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+      /* Sombra para o campo de entrada */
+    }
+
+    /* Estilos do botão de pesquisa */
+    #searchSubmit {
+      background-color: #ffcc00;
+      color: #272A33;
+      border: none;
+      padding: 10px;
+      margin-top: 10px;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+    }
+
+    #searchSubmit:hover {
+      background-color: #e6b800;
+    }
+
+    /* Estilos da Seção de Cartões */
+    .card-section {
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 5px;
+      margin: 20px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .card {
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      padding: 15px;
+      margin: 2px;
+      background-color: #f9f9f9;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+      transition: transform 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    /* Estilos do Rodapé */
+    footer {
+      background-color: #272A33;
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .footer-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .footer-left {
+      flex: 1;
+    }
+
+    .footer-right {
+      flex: 1;
+    }
+
+    .footer-right ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .footer-right li {
+      display: inline;
+      margin: 0 10px;
+    }
+
+    .footer-right a {
+      color: #ffcc00;
+      text-decoration: none;
+    }
+
+    .footer-right a:hover {
+      text-decoration: underline;
+    }
+
+    /* Media Queries para Responsividade */
+    @media (max-width: 768px) {
+      .menu-toggle {
+        display: block;
+        /* Exibe o menu hamburger em telas pequenas */
+      }
+
+      .nav-links {
+        display: none;
+        /* Esconde os links da navbar */
+        flex-direction: column;
+        /* Muda para coluna */
+        position: absolute;
+        top: 60px;
+        /* Para evitar sobreposição */
+        left: 0;
+        width: 100%;
+        background-color: #272A33;
+        /* Cor de fundo do menu */
+        padding: 10px 0;
+      }
+
+      .nav-links.active {
+        display: flex;
+        /* Exibe os links quando o menu está ativo */
+      }
+
+      .nav-links li {
+        margin: 10px 0;
+        /* Margem vertical entre os links */
+      }
+
+      #searchInput {
+        margin: 10px 0;
+        /* Margem para separar do botão */
+      }
+    }
+  </style>
+
+</head>
+
+<body>
+  <div id="loader" class="loader">
+    <p class="loader-message">Aguarde, estamos buscando os melhores voos para você...</p>
+  </div>
+
+  <section>
+
+    <nav class="navbar">
+      <div class="menu-toggle">
+        <span class="span"></span>
+        <span class="span"></span>
+        <span class="span"></span>
+      </div>
+      <ul class="nav-links">
+        <li><a href="#home">Home</a></li>
+        <li><a href="#viagens">Viagens</a></li>
+        <li><a href="#sobre">Sobre</a></li>
+        <li><a href="#informacoes">Informações</a></li>
+        <li><a href="search.html">Buscar Voos</a></li>
+      </ul>
+      <div class="button-container">
+        <button id="searchButton">Filtros</button>
+      </div>
+    </nav>
+  </section>
+
+  <div id="searchModal" class="modal">
+    <div class="modal-content">
+      <span class="close-button">&times;</span>
+      <h2>Buscar Voos</h2>
+      <input type="text" id="searchInput" placeholder="Digite o destino..." />
+      <button id="searchSubmit">Buscar</button>
+    </div>
+  </div>
+
+
+  <br><br><br><br><br><br><br><br>
+  <center>
+    <h1>Melhores ofertas de Voos</h1>
+  </center>
+  <br>
+  <section class="card-section" id="viagens">
+    <div class="flight-list"></div>
+  </section>
+
+  <footer>
+    <div class="footer-container">
+      <div class="footer-left">
+        <h4>Rota Express</h4>
+        <p>Fácil, rápido e dinâmico.</p>
+        <p>&copy; 2024 Rota Express. Todos os direitos reservados.</p>
+      </div>
+      <div class="footer-right">
+        <ul>
+          <li><a href="#home">Home</a></li>
+          <li><a href="#viagens">Viagens</a></li>
+          <li><a href="#sobre">Sobre</a></li>
+          <li><a href="#informacoes">Informações</a></li>
+          <li><a href="search.html">Buscar Voos</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    window.addEventListener("load", function () {
+      // Aguarda 5 segundos para remover o loader
+      setTimeout(function () {
+        document.body.classList.add("loaded");
+      }, 5000); // 5000 ms = 5 segundos
+    });
+
+    // Adicione este código ao seu script existente
+    $(document).ready(function () {
+      $('#searchSubmit').on('click', function () {
+        // Mostra o loader
+        $('#loader').show();
+
+        // Simula uma espera de 3 segundos (3000 ms)
+        setTimeout(function () {
+          // Oculta o loader
+          $('#loader').hide();
+
+          // Aqui você pode adicionar a lógica de busca de voos
+          // Por exemplo, redirecionar para outra página ou fazer uma requisição AJAX
+        }, 3000); // 3000 ms = 3 segundos
+      });
+    });
+
+  </script>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+  <script src="js/api/notices.js"></script>
+  <script src="js/display_card.js"></script>
+  <script src="js/menu.js"></script>
+  <script src="js/search_modal.js"></script>
+</body>
+
+</html>
